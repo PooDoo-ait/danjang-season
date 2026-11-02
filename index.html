@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 Ver.1.0</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -1153,6 +1153,10 @@ html,body{margin:0}
 
 .cond>span{color:var(--ink)}
 .cond>span.cv{position:absolute;inset:0;color:var(--cond-ink);clip-path:inset(0 calc(100% - var(--v)) 0 0)}
+.varline{color:var(--muted);margin:0}
+
+.ver{font-family:var(--f-body);font-size:.32em;font-weight:600;color:var(--muted);letter-spacing:.02em;vertical-align:.5em;margin-left:4px}
+.ver-s{display:block;font-family:var(--f-body);font-size:9px;font-weight:600;color:var(--muted);letter-spacing:.02em;margin-top:2px}
 </style>
 </head><body><div id="app"><div id="nojs" style="box-sizing:border-box;width:calc(100% - 32px);max-width:420px;margin:48px auto;padding:24px 20px;background:#fff;border:1px solid #e2e6df;border-radius:18px;font-family:system-ui,-apple-system,sans-serif;color:#16201a;line-height:1.6"><b style="font-size:18px">단장의 시즌</b><p style="margin:10px 0 0;font-size:15px">여기서는 게임이 실행되지 않아요.</p><p style="margin:6px 0 0;font-size:14px;color:#5f6b63">미리보기 화면은 게임 프로그램을 돌리지 않아요. 컴퓨터의 크롬에서 이 파일을 열거나, 휴대폰에서는 게임 링크로 열어 주세요.</p></div></div>
 <script>
@@ -1505,7 +1509,7 @@ const HSTAT = { con: "컨택", pow: "파워", eye: "선구", pat: "인내", spd:
 const PSTAT = { vel: "구속", brk: "변화", stf: "구위", ctl: "제구", sta: "지구력", clu: "위기관리" };
 const LG = { avg: .265, bb: .092, k: .185, iso: .135, hr: .024, pk: .195, pbb: .088, phr: .022, babip: .305 };
 
-const BAL = { morDiv: 50, morReg: .04, buffK: 0.8, zk: 0.9, evMor: true }; // 리그 균형: 사건 중심 사기, 경기 중 실력 반영 90% // 리그 균형 조절값
+const BAL = { homeAdv: 1.0, tripK: 1, heat: true, spDice: 3, starCap: 3, morDiv: 50, morReg: .04, buffK: 0.8, zk: 0.8, evMor: true }; // 리그 균형: 사건 중심 사기, 경기 중 실력 반영 90% // 리그 균형 조절값
 function grade(v) { return v >= 90 ? "S" : v >= 80 ? "A" : v >= 70 ? "B" : v >= 60 ? "C" : v >= 50 ? "D" : "F"; }
 function ipToOuts(ip) { if (ip == null || ip === "") return null; const s = String(ip).trim(); if (s.includes(" ")) { const [a, b] = s.split(/\s+/); return parseInt(a) * 3 + (b.startsWith("1") ? 1 : b.startsWith("2") ? 2 : 0); } if (s.includes("/")) { return s.startsWith("1") ? 1 : 2; } const f = parseFloat(s); const whole = Math.floor(f); const frac = Math.round((f - whole) * 10); return whole * 3 + (frac === 1 ? 1 : frac === 2 ? 2 : 0); }
 function outsToIP(o) { return Math.floor(o / 3) + (o % 3 ? "." + (o % 3) : ""); }
@@ -1736,7 +1740,7 @@ function buildLeague(base, TEAM_META, userTeam) {
 // 분류·원석 보너스·몸값·연봉·샐러리캡 초기화 (게임 시작 때 한 번)
 function initEconomy(S) {
   const all = Object.values(S.players).concat(S.fpool || []);
-  for (const p of all) p.pm = Math.round((0.9 + rnd() * 0.2) * 100) / 100;
+  for (const p of all) { p.pm = Math.round((0.9 + rnd() * 0.2) * 100) / 100; p.rep = Math.round(clamp(sgauss(rnd), -2.5, 2.5) * 100) / 100; } // 이름값: 실제 능력과 다르게 매겨진 몸값
   reclassAll(S);
   for (const p of all) { if (p.cls === "원석") { p.gb = gemRoll(rnd); p.gbShown = false; } }
   for (const p of all) { p.sal = priceOf(p); p.yrs = p.age >= 33 ? 1 : ri(1, 3); p.est = p.est.filter(k => k !== "sal"); if (p.src === "virt") p.sal = Math.max(0.3, Math.min(p.sal, 1.5)); }
@@ -1887,7 +1891,7 @@ function expect(p, gemExp) {
   return { era, whip: (h + m.pBB) / (outsPA / 3), k9: m.pK / outsPA * 27, xw: runs / 10 };
 }
 // 몸값(억): 예상 승수 → 돈. 위로 갈수록 완만, 판마다 ±10%, 35세 이상 80%
-const PRC = { k: 3.6, e: 1.5, cap: 45, gem: 0.7, low: 3.5 }; // 몸값 곡선: 잘하는 선수일수록 가파르게, 원석은 30% 할인
+const PRC = { k: 3.6, e: 1.5, cap: 45, gem: 0.7, low: 3.5 , top: 48, starK: .15, starMin: 15, rep: 0.7 }; // 몸값 곡선: 잘하는 선수일수록 가파르게, 원석은 30% 할인
 // 포지션 보정(승): 수비가 어려운 자리일수록 가치를 더 쳐줌 (몸값 계산에만 씀)
 const POS_ADJ = { C: 1.5, SS: 1.0, "2B": 0.5, CF: 0.5, "3B": 0.3, LF: -0.3, RF: -0.3, "1B": -0.6, DH: -1.0 };
 // 올해 1군에서 꾸준히 뛴 선수 (경력 프리미엄 대상)
@@ -1933,7 +1937,7 @@ function moraleEvents(T, O, won, lost, res, i, st0, rk0) {
 function vetList(S, T) { return Object.values(S.players).filter(p => p.t === T.id && p.lvl === 1 && p.age >= 35 && !(p.inj > 0) && isEstablished(p)); }
 function vetLead(S, T) { let n = 0; for (const p of Object.values(S.players)) if (p.t === T.id && p.lvl === 1 && p.age >= 35 && !(p.inj > 0) && isEstablished(p)) { if (++n >= 3) return true; } return false; }
 function priceOf(p) {
-  const e = expect(p, true); const xw = e.xw + (p.isP ? 0 : (POS_ADJ[p.pos] || 0));
+  const e = expect(p, true); const xw = e.xw + (p.isP ? 0 : (POS_ADJ[p.pos] || 0)) + (p.rep || 0) * PRC.rep;
   let v;
   if (xw >= 0) v = 0.3 + PRC.k * Math.pow(xw + 1, PRC.e);
   else { const t = Math.max(0, (xw + PRC.low) / PRC.low); v = 0.3 + (PRC.k) * t * t; } // 평균 아래도 실력만큼 0.3억~ 차이
@@ -1942,6 +1946,8 @@ function priceOf(p) {
   if (p.cls === "원석") v *= PRC.gem; // 원석은 도박이라 할인
   if (p.age >= 35) v *= .8;
   if (p.age >= 33 && isEstablished(p)) v *= 1 + Math.min(.3, .05 * (p.age - 32)); // 경력 프리미엄
+  if (p.cls === "스타") v = Math.max(v + Math.min(v * PRC.starK, 4), PRC.starMin); // 스타 할증 (팀 능력치 효과 값)
+  if (v > PRC.top) v = PRC.top + (v - PRC.top) * .25; // 최고 스타 몸값 50억 안팎으로
   if (p.fr === 1) v = Math.max(v, 3);
   return Math.max(0.3, Math.round(v * 10) / 10);
 }
@@ -1952,11 +1958,20 @@ function reclassAll(S) {
   for (const isP of [false, true]) {
     const g = uniq.filter(p => p.isP === isP).map(p => ({ p, x: expect(p, false).xw })).sort((a, b) => b.x - a.x);
     const n = g.length;
-    g.forEach((o, i) => { const f = i / n; const p = o.p; p.xw = o.x; p.star2 = f < .01; p.cls = f < .05 ? "스타" : f < .35 ? "주전" : p.age <= 25 ? "원석" : "실속"; });
+    g.forEach((o, i) => { const f = i / n; const p = o.p; p.xw = o.x; p.star2 = f < .01; p.cls = f < .35 ? "주전" : p.age <= 25 ? "원석" : "실속"; });
   }
+  // 스타: 리그 전체(타자+투수) 예상 승수 상위 STAR_N명. 구단마다 최소 1명·최대 STAR_MAX명 (선수단 뽑기를 마친 내 팀은 제한 없음)
+  const all = uniq.filter(p => p.xw != null).sort((a, b) => b.xw - a.xw);
+  const onTeam = p => S.teams.some(t => t.id === p.t) ? p.t : null;
+  const free = t => t === S.user && S.drDone;
+  const per = {}, stars = new Set(); const add = p => { stars.add(p); const t = onTeam(p); if (t) per[t] = (per[t] || 0) + 1; };
+  for (const T of S.teams) { if (free(T.id)) continue; const b = all.find(p => p.t === T.id); if (b) add(b); }
+  for (const p of all) { if (stars.size >= STAR_N) break; if (stars.has(p)) continue; const t = onTeam(p); if (t && !free(t) && (per[t] || 0) >= STAR_MAX) continue; add(p); }
+  for (const p of all) { if (stars.has(p)) p.cls = "스타"; else p.star2 = false; }
 }
+const STAR_N = 30, STAR_MAX = 4;
 function gemRoll(r) { const u = r(); if (u < .35) return -1 - Math.floor(r() * 8); if (u < .80) return clamp(Math.round(8.7 + sgauss(r) * 3.5), 0, 14); return 15 + Math.floor(r() * 6); }
-function starBuff(S, lineup, sp) { let b = 0; for (const p of [...lineup, sp]) { if (!p || p.cls !== "스타") continue; b += p.star2 ? 2 : 1; } return Math.min(5, b); }
+function starBuff(S, lineup, sp) { let b = 0; for (const p of [...lineup, sp]) { if (!p || p.cls !== "스타") continue; b += p.star2 ? 2 : 1; } return Math.min(BAL.starCap, b); }
 // 에이스 등판: 그 팀 선발 중 종합이 가장 높은 투수가 나오는 날 사기 보정 +0.5
 const ACE_BONUS = 0.5;
 function aceOf(S, T) { const r = rotationList(S, T).filter(p => p.role === "SP"); return r.length ? r.reduce((a, b) => ovr(b) > ovr(a) ? b : a) : null; }
@@ -2002,7 +2017,8 @@ function buildLineup(S, T, oppHand, day, restSet) {
   if (pool.length < 9) pool = teamPlayers(S, T.id).filter(p => !p.isP && p.inj === 0);
   const fresh = pool.filter(p => p.cond >= thr || (T.tac.dev && p.cls === "원석"));
   const use = fresh.length >= 10 ? fresh : pool;
-  const manual = T.lu && !T.lu.auto && T.lu[oppHand === "L" ? "L" : "R"];
+  const oneLu = T.id === S.user && T.lu && !T.lu.split; // 내 팀: 따로 짜기를 켜지 않으면 라인업 하나
+  const manual = T.lu && !T.lu.auto && T.lu[!oneLu && oppHand === "L" ? "L" : "R"];
   let lineup = [];
   if (manual) {
     const taken = new Set();
@@ -2017,7 +2033,7 @@ function buildLineup(S, T, oppHand, day, restSet) {
     }
     if (lineup.length === 9) return lineup;
   }
-  return autoLineup(use, oppHand);
+  return autoLineup(use, oneLu ? "R" : oppHand);
 }
 function platoonAdj(p, hand) { if (!hand) return 0; if (p.bt === "S") return 1; return p.bt === hand ? -3 : 1.5; }
 function slotScore(p, pos, hand) { const pen = eligibleAt(p, pos); if (pen == null) return -999; const defW = { C: .5, SS: .45, CF: .4, "2B": .35, "3B": .3, RF: .2, LF: .15, "1B": .1, DH: 0 }[pos]; return batVal(p) + platoonAdj(p, hand) + (pos === "DH" ? 0 : (p.r.def - 55) * defW) - pen * 4 + p.form * .5 + (p.cond < 60 ? (p.cond - 60) * .15 : 0); }
@@ -2103,10 +2119,23 @@ function rpAvailable(p, day, penMax) {
 
 // 문자중계 기록은 가장 최근 우리 경기만 남김 (저장 용량)
 function keepPbp(S, gid, pbp) { if (S.pbpGid && S.box[S.pbpGid] && S.pbpGid !== gid) delete S.box[S.pbpGid].pbp; if (pbp && S.box[gid]) { S.box[gid].pbp = pbp; S.pbpGid = gid; } }
+// 이동 피로: 원정 연속 경기 수와 먼 거리 이동
+const REGION = { "잠실": "수도권", "고척": "수도권", "문학": "수도권", "수원": "수도권", "대전": "충청", "광주": "호남", "대구": "영남", "사직": "영남", "창원": "영남" };
+const HEAT_BAT = 1.0;
+function travelPen(T, park) {
+  let v = 0, w = [];
+  const away = park !== T.park;
+  const trip = away ? (T.trip || 0) + 1 : 0; // 오늘 경기 포함 원정 연속
+  if (trip >= 7) { const p = Math.min(1.5, .5 + (trip - 7) * .15); v += p; w.push(`원정 ${trip}연전`); }
+  if (T.lastPark && T.lastPark !== park && REGION[T.lastPark] !== REGION[park] && T.lastDay != null && T._today - T.lastDay <= 1) { v += .7; w.push("장거리 이동"); }
+  return { v: Math.round(v * 10) / 10, w: w.join(" · ") };
+}
+function travelLog(S, H, A, day) { for (const T of [H, A]) { T.trip = T === H ? 0 : (T.trip || 0) + 1; T.lastPark = H.park; T.lastDay = day; } }
 function simGame(S, home, away, day, opts = {}) { ZK = BAL.zk; try { return simGame0(S, home, away, day, opts); } finally { ZK = 1; } }
 function simGame0(S, home, away, day, opts = {}) {
   const H = team(S, home), A = team(S, away);
-  const ctx = { day, park: H.hf, ps: !!opts.post };
+  const dd = S.sched && S.sched[day]; const mon = dd && dd.date ? monthOf(dd.date) : 0;
+  const ctx = { day, park: H.hf, ps: !!opts.post, hot: BAL.heat && !opts.post && (mon === 7 || mon === 8) };
   const side = [A, H].map((T, i) => {
     const sp = pickStarter(S, T, day);
     return { T, sp, i };
@@ -2116,6 +2145,12 @@ function simGame0(S, home, away, day, opts = {}) {
     s.lineup = buildLineup(S, s.T, opp.sp ? opp.sp.th : "R", day);
     s.buff = starBuff(S, s.lineup.map(x => x.p), s.sp);
     s.bonus = teamBonus(s.T, s.buff) + (s.sp && isAce(S, s.T, s.sp) ? ACE_BONUS : 0);
+    // 경기 변수: 홈 이점 · 이동 피로 · 그날 선발 컨디션
+    s.tags = [];
+    if (i === 1 && BAL.homeAdv) { s.bonus += BAL.homeAdv; }
+    if (!ctx.ps) { s.T._today = day; const tf = travelPen(s.T, H.park); if (tf.v) { s.bonus -= tf.v * BAL.tripK; s.tags.push({ k: "trip", v: -tf.v, w: tf.w }); } }
+    s.spDay = BAL.spDice ? clamp(Math.round(sgauss(rnd) * BAL.spDice * 10) / 10, -8, 8) : 0;
+    if (Math.abs(s.spDay) >= 4) s.tags.push({ k: "spday", v: s.spDay, w: s.spDay > 0 ? "선발 공이 좋은 날" : "선발 컨디션 난조" });
     s.pen = bullpenRoles(S, s.T);
     s.pit = s.sp; s.pitNP = 0; s.pitStart = true; s.used = [s.sp]; s.bo = 0; s.runs = 0; s.hits = 0; s.err = 0;
     s.line = []; s.pl = new Map(); s.bl = new Map(); s.fx = new Map(); s.fn = new Map();
@@ -2128,6 +2163,7 @@ function simGame0(S, home, away, day, opts = {}) {
     s.pl.set(s.sp.id, { outs: 0, H: 0, R: 0, ER: 0, BB: 0, SO: 0, HR: 0, HBP: 0, NP: 0, start: true, enter: [0, 0] });
     s.limit = clamp((93 + (s.sp.r.sta - 60) * 0.8) * HOOK[s.T.tac.hook], 60, 120) - (s.sp.cond < 80 ? (80 - s.sp.cond) * .4 : 0);
     if (s.T._ps && s.T._ps.spCap) s.limit = Math.min(s.limit, s.T._ps.spCap);
+    if (ctx.hot) s.limit *= .94;
   });
   const g = { inning: 1, top: true, score: [0, 0], leadHist: [], winPit: [null, null] };
   const pbp = (home === S.user || away === S.user) ? [] : null; // 우리 경기 문자중계 기록
@@ -2203,10 +2239,10 @@ function simGame0(S, home, away, day, opts = {}) {
       // 피로
       const fat = Math.min(14, Math.max(0, def.pitNP - (def.pitStart ? def.limit * .85 : 24)) / 15 * 8 + (p.cond < (def.pitStart ? 85 : 70) ? ((def.pitStart ? 85 : 70) - p.cond) * .25 : 0));
       const risp = !!(bases[1] || bases[2]);
-      const pe = eff(p, def.bonus, true, -fat + (risp ? (p.r.clu - 60 + (def.vet ? (ctx.ps ? 5 : 2) : 0)) * .35 : 0), def);
+      const pe = eff(p, def.bonus, true, (p === def.sp ? def.spDay : 0) - fat + (risp ? (p.r.clu - 60 + (def.vet ? (ctx.ps ? 5 : 2) : 0)) * .35 : 0), def);
       if (def.catOrig && def.catOrig === p.orig) pe.ctl += 2; // 배터리 케미
       const condPen = b.cond < 55 ? (55 - b.cond) * .25 : 0;
-      const be = eff(b, off.bonus, false, platoonAdj(b, p.th) - condPen, off);
+      const be = eff(b, off.bonus, false, platoonAdj(b, p.th) - condPen + (ctx.hot ? HEAT_BAT : 0), off);
       const lead = offScore() - defScore();
       if (opsM >= 1 && bases[0] && !bases[2] && outs === 0 && g.inning >= 7 && Math.abs(lead) <= 1 && batVal(b) < 56 && rnd() < .3 * opsM) {
         // 희생번트
@@ -2382,7 +2418,7 @@ function injure(S, p) {
 /* ---------- box score capture ---------- */
 function captureBox(S, res, gid, date) {
   const enc = s => ({
-    t: s.T.id, line: s.line.slice(), R: res.score[s.i], H: [...s.bl.values()].reduce((a, b) => a + b.H, 0), E: s.err, buff: s.buff,
+    t: s.T.id, line: s.line.slice(), R: res.score[s.i], H: [...s.bl.values()].reduce((a, b) => a + b.H, 0), E: s.err, buff: s.buff, tags: (s.tags || []).slice(),
     bat: s.lineup.map(x => { const b = s.bl.get(x.p.id); return [x.p.id, x.pos, b.AB, b.R, b.H, b.RBI, b.HR, b.BB, b.SO]; }),
     pit: s.used.map(p => { const b = s.pl.get(p.id); return [p.id, b.outs, b.H, b.R, b.ER, b.BB, b.SO, b.NP, res.dec[p.id] || ""]; })
   });
@@ -2443,7 +2479,7 @@ function playDay(S) {
   const rk0 = {}; if (BAL.evMor) standings(S).forEach((r, i) => rk0[r.id] = i + 1);
   for (const [h, a] of d.g) {
     const res = simGame(S, h, a, S.day);
-    const H = team(S, h), A = team(S, a); const st0 = { [h]: H.streak, [a]: A.streak };
+    const H = team(S, h), A = team(S, a); travelLog(S, H, A, S.day); const st0 = { [h]: H.streak, [a]: A.streak };
     const r = [h, a, res.score[1], res.score[0]];
     d.res.push(r);
     if (res.winner === 1) { H.w++; A.l++; H.streak = H.streak > 0 ? H.streak + 1 : 1; A.streak = A.streak < 0 ? A.streak - 1 : -1; }
@@ -3078,7 +3114,7 @@ function tierOf(p) { return p.cls; }
 function teamInfo(S) {
   const ranks = S.teams.map(T => ({ id: T.id, s: E.teamStrength(S, T.id) })).sort((a, b) => b.s - a.s);
   const val = S.teams.map(T => ({ id: T.id, v: E.teamPlayers(S, T.id).map(basePrice).sort((a, b) => b - a).slice(0, 25).reduce((a, b) => a + b, 0) })).sort((a, b) => b.v - a.v);
-  const BUD = [200, 200, 195, 195, 190, 190, 185, 185, 180, 180];
+  const BUD = [220, 220, 215, 215, 210, 210, 205, 205, 200, 200];
   const WIN = [28, 21, 15, 11, 8, 6, 4.5, 3.5, 2, 1];
   const out = {};
   ranks.forEach((r, i) => {
@@ -3245,11 +3281,17 @@ function autoAssign(S, pid) { // 자유 검색: 맞는 빈자리에 자동 배�
   for (const s of order) if (!D.picks[s] && eligible(p, s)) return pick(S, s, pid);
   return p.isP ? (p.role === "SP" ? "선발·불펜 자리가 모두 찼어요." : "불펜 7자리가 모두 찼어요.") : "이 선수가 들어갈 빈 야수 자리가 없어요.";
 }
-const REPL_GAP = 4; // 대체 선수는 뺏긴 선수보다 능력치 평균 4 낮게
-const AUTO_POOL = 12; // 자동 채우기 무작위 폭
+const REPL_GAP = 8; // 대체 선수는 뺏긴 선수보다 능력치 평균 8 낮게
+const AUTO_POOL = 12; // (예전 값)
+const AUTO_LUCK = { hi: .08, mid: .62 }; // 나머지 35%는 아쉬운 뽑기
 function autoFill(S, T) { // 빈자리 자동 채우기: T억 안에서(없으면 남은 예산) 예상 승수가 가장 높게
   const D = S.dr; const empty = ALL.filter(s => !D.picks[s]); if (!empty.length) return;
   let left = T == null ? remaining(S) : T;
+  // 자동 채우기 운: 가끔 잘 뽑고(상위권), 보통은 중간, 꽤 자주 아쉽게 뽑아요 — 결과를 예상하기 어렵게
+  const luck = Math.random(); const tier = luck < AUTO_LUCK.hi ? "hi" : luck < AUTO_LUCK.hi + AUTO_LUCK.mid ? "mid" : "lo";
+  const POOLN = { hi: 30, mid: 9999, lo: 9999 }[tier];
+  const useK = tier === "lo" ? .55 + Math.random() * .25 : tier === "mid" ? .75 + Math.random() * .15 : .95; // 예산을 덜 쓰는 경우도 있어요
+  const lim = left * (1 - useK); // 이만큼은 남겨 둠
   const W = s => s.startsWith("BN") ? .25 : s.startsWith("RP") ? (+s.slice(2) <= 3 ? .6 : .35) : 1; // 자리별 출전 비중
   const XW = new Map(); const sc = (p, s) => { const k = p.id + s; if (!XW.has(k)) XW.set(k, slotScore(p, s) * W(s)); return XW.get(k); };
   const used = new Set(Object.values(D.picks)); const pl = pool(S);
@@ -3262,10 +3304,10 @@ function autoFill(S, T) { // 빈자리 자동 채우기: T억 안에서(없으�
     const opts = [];
     for (const s of empty) {
       const cur = S.players[D.picks[s]]; if (!cur) continue; const cc = price(S, cur), cs = sc(cur, s);
-      for (const x of cand[s]) { if (used.has(x.p.id)) continue; const dc = x.c - cc; if (dc > left + 0.001) continue; const ds = sc(x.p, s) - cs; if (ds <= 0) continue; opts.push({ s, x, dc, v: dc <= 0 ? 999 + ds : ds / dc }); }
+      for (const x of cand[s]) { if (used.has(x.p.id)) continue; const dc = x.c - cc; if (dc > left - lim + 0.001) continue; const ds = tier !== "lo" ? sc(x.p, s) - cs : dc * W(s); if (ds <= 0) continue; opts.push({ s, x, dc, v: dc <= 0 ? 999 + ds : ds / dc }); } // 보통·아쉬운 날엔 "비싼 선수가 좋은 선수"라고 보고 골라요
     }
     if (!opts.length) break;
-    opts.sort((a, b) => b.v - a.v); const top = opts.slice(0, Math.max(1, Math.min(AUTO_POOL, opts.length)));
+    opts.sort((a, b) => b.v - a.v); const top = opts.slice(0, Math.max(1, Math.min(POOLN, opts.length)));
     const best = top[Math.floor(Math.random() * top.length)];
     used.delete(D.picks[best.s]); D.picks[best.s] = best.x.p.id; used.add(best.x.p.id); left -= best.dc;
   }
@@ -3347,6 +3389,7 @@ let S = null, BASE = null;
 const UI = { tab: "home", sub: { meet: "room", tac: "plan", roster: "1", rec: "stand", hand: "R" }, sel: null, modal: null, busy: false, msg: null, recKey: "AVG", recMine: false, calM: null, recPos: "H" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const GAME_VER = "1.0"; // 게임 버전 — 업데이트할 때마다 올려요
 const ls = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
 
 /* ---------- 저장 ---------- */
@@ -3514,7 +3557,7 @@ function render() {
   app.innerHTML = `
   <div class="shell">
     <nav class="rail" aria-label="메뉴">
-      <div class="brand">단장의<br>시즌</div>
+      <div class="brand">단장의<br>시즌<span class="ver-s">Ver.${GAME_VER}</span></div>
       ${TABS.map(([k, l]) => `<button class="navb ${UI.tab === k ? "on" : ""}" data-act="tab" data-v="${k}">${icon(k === "home" && postTabs ? "trophy" : k)}<span>${l}</span>${k === "meet" && unread ? `<i class="dot">${unread}</i>` : ""}</button>`).join("")}
     </nav>
     <div class="main">
@@ -3666,7 +3709,7 @@ function nextGameCard(pv) {
   const side = (tid, p, right) => right ? `<div class="ngs r"><div>${spl(p)}</div>${teamSq(tid)}</div>` : `<div class="ngs">${teamSq(tid)}<div>${spl(p)}</div></div>`;
   const away = home ? [opp, pv.osp] : [S.user, pv.sp], hm = home ? [S.user, pv.sp] : [opp, pv.osp];
   return `<div class="ng2">${side(away[0], away[1], false)}<span class="vs">VS</span>${side(hm[0], hm[1], true)}</div>
-    <p class="xs muted">${home ? "우리 홈" : "원정"} · 상대 선발이 ${pv.osp && pv.osp.th === "L" ? "좌완이라 좌완용" : "우완이라 우완용"} 라인업이 나가요.</p>`;
+    <p class="xs muted">${home ? "우리 홈" : "원정"}${U().lu.split ? ` · 상대 선발이 ${pv.osp && pv.osp.th === "L" ? "좌완이라 좌완용" : "우완이라 우완용"} 라인업이 나가요` : ""}.</p>`;
 }
 function goalProgress() {
   const g = S.goal; const t = U(); const rk = rankOf(S.user); const pct = t.w + t.l ? t.w / (t.w + t.l) : 0;
@@ -3770,8 +3813,9 @@ function planView(t) {
     <div class="opt"><div class="row-sb"><h4>원석 육성</h4><span class="muted sm">${tc.dev ? "켬" : "끔"}</span></div><div class="segopt"><button class="${!tc.dev ? "on" : ""}" data-act="tacSet" data-k="dev" data-v="0">끔</button><button class="${tc.dev ? "on" : ""}" data-act="tacSet" data-k="dev" data-v="1">켬</button></div><p class="help">켜면 매달 초 원석(${gems}명)의 주요 능력치 +2 (시즌 내내 유지) · 원석 한 명당 0.5억이 연봉 총액에 더해져요 · 지금까지 ${won(S.devSpent)}</p></div>
   </section>`;
 }
+const luHand = t => (t.lu.split ? UI.sub.hand : "R");
 function lineupView(t) {
-  const hand = UI.sub.hand;
+  const hand = luHand(t); const split = !!t.lu.split;
   const auto = t.lu.auto;
   const lu = currentLineup(t, hand);
   const ids = new Set(lu.map(x => x.p.id));
@@ -3785,14 +3829,14 @@ function lineupView(t) {
   const lhead = `<li class="lhead"><span></span><span></span><span>선수</span><span>타율</span><span>OPS</span><span>홈런</span><span>체력</span>${auto ? "" : "<i></i>"}</li>`;
   return `${holeBanner()}<section class="card">
     <div class="row-sb wrap"><h3>타순·수비 <small class="muted">${auto ? "자동" : "직접"}</small></h3>
-      <div class="segopt mini"><button class="${hand === "R" ? "on" : ""}" data-act="sub" data-k="hand" data-v="R">상대 우완</button><button class="${hand === "L" ? "on" : ""}" data-act="sub" data-k="hand" data-v="L">상대 좌완</button></div></div>
-    <div class="row-sb wrap"><p class="sm">${auto ? `<span class="chip">자동</span> 코칭스태프가 상대 선발 손에 맞춰 짜요.` : `<span class="chip on">직접</span> 아래 목록에서 두 선수를 누르면 타순이 바뀌어요. 경기장 그림에서 두 선수를 누르면 수비 위치가 바뀌고, 벤치 선수를 누른 뒤 경기장 선수를 누르면 교체돼요.${(() => { const rec = recLineup(t, hand); const diff = lu.filter((x, i) => !rec[i] || rec[i].p.id !== x.p.id || rec[i].pos !== x.pos).length; return diff ? ` <b>추천과 다른 자리 ${diff}곳</b>` : " 추천과 같아요."; })()}`}</p>
-      <div class="btns">${auto ? `<button class="ghost small" data-act="luManual">직접 짜기</button>` : `<button class="ghost small" data-act="luRec">추천대로</button><button class="ghost small" data-act="luAuto">자동으로 되돌리기</button><button class="ghost small" data-act="luCopy">${hand === "R" ? "좌완용" : "우완용"}에 복사</button>`}</div></div>
+      ${split ? `<div class="segopt mini"><button class="${hand === "R" ? "on" : ""}" data-act="sub" data-k="hand" data-v="R">상대 우완</button><button class="${hand === "L" ? "on" : ""}" data-act="sub" data-k="hand" data-v="L">상대 좌완</button></div>` : `<button class="ghost small" data-act="luSplit">좌완 상대 따로 짜기</button>`}</div>
+    <div class="row-sb wrap"><p class="sm">${auto ? `<span class="chip">자동</span> ${split ? "코칭스태프가 상대 선발 손에 맞춰 짜요." : "코칭스태프가 가장 좋은 라인업 하나로 짜요."}` : `<span class="chip on">직접</span> 아래 목록에서 두 선수를 누르면 타순이 바뀌어요. 경기장 그림에서 두 선수를 누르면 수비 위치가 바뀌고, 벤치 선수를 누른 뒤 경기장 선수를 누르면 교체돼요.${(() => { const rec = recLineup(t, hand); const diff = lu.filter((x, i) => !rec[i] || rec[i].p.id !== x.p.id || rec[i].pos !== x.pos).length; return diff ? ` <b>추천과 다른 자리 ${diff}곳</b>` : " 추천과 같아요."; })()}`}</p>
+      <div class="btns">${auto ? `<button class="ghost small" data-act="luManual">직접 짜기</button>` : `<button class="ghost small" data-act="luRec">추천대로</button><button class="ghost small" data-act="luAuto">자동으로 되돌리기</button>${split ? `<button class="ghost small" data-act="luCopy">${hand === "R" ? "좌완용" : "우완용"}에 복사</button>` : ""}`}${split ? `<button class="ghost small" data-act="luMerge">하나로 합치기</button>` : ""}</div></div>
     ${field}
     <ul class="plist llist">${lhead}${lu.map((x, i) => row(x, i)).join("")}</ul>
     <h4 class="sub">벤치 ${bench.length}</h4>
     <ul class="plist llist">${bench.map(p => row({ p, pos: p.pos }, null)).join("")}</ul>
-    <p class="help">${auto ? "자동일 때 지정한 주전이 지치면(주전 휴식 다이얼) 같은 포지션 벤치가 그 타순에 나가요." : "직접 짠 라인업은 상대 선발 손에 따라 우완용·좌완용이 따로 쓰여요. 지친 주전·부상자 자리는 같은 포지션 벤치가 채워요."}</p>
+    <p class="help">${auto ? "자동일 때 지정한 주전이 지치면(주전 휴식 다이얼) 같은 포지션 벤치가 그 타순에 나가요." : (split ? "상대 선발이 우완이면 우완용, 좌완이면 좌완용 라인업이 나가요. " : "상대 선발이 누구든 이 라인업 하나로 나가요. ") + "지친 주전·부상자 자리는 같은 포지션 벤치가 채워요."}</p>
   </section>`;
 }
 // 수비 위치 고르기: 권장 / 수비 −n / 불가 (지명타자 권장은 수비가 많이 약한 선수만)
@@ -4216,7 +4260,7 @@ function startScreen() {
   return `<div class="start">
     <div class="start-hero">
       <div class="row-sb"><p class="eyebrow">KBO 단장 시뮬레이션</p>${themeBtn()}</div>
-      <h1 class="display">단장의 시즌</h1>
+      <h1 class="display">단장의 시즌 <span class="ver">Ver.${GAME_VER}</span></h1>
       <p class="intro">구단을 인수해 선수단 25명을 직접 뽑고, 2026 시즌 144경기를 운영해 보세요. 타순과 마운드를 짜고, 트레이드와 FA, 드래프트로 팀을 만들어요.</p>
       <div class="datanote"><b>선수 데이터</b> 2026 KBO 정규시즌 최종 기록 · 실제 선수 ${bs.real}명. 나이·연봉·구속처럼 기록표에 없는 값은 추정치예요.
         ${UI.mode === "free" ? `<button class="link" data-act="settings" data-v="data">기록 붙여넣기</button>` : ""}</div>
@@ -4538,6 +4582,7 @@ function liveStep(L) {
       const g = { gid, day: di, date: d.date, opp: home ? r[1] : r[0], home, my, op, res: my > op ? "W" : my < op ? "L" : "D", text: sm ? sm.text : "", big: sm ? (sm.big || op === 0 || sm.margin >= 7) : false, wp: sm && sm.wp, lp: sm && sm.lp };
       g.others = d.res.filter(x => x !== r).map(x => x.slice());
       { const ml = U().morLog || []; const i0 = ml.lastIndexOf(mlLast); g.mor = (mlLast ? ml.slice(i0 + 1) : ml.slice(ml0)).slice(); g.riv = E.rivalName(S.user, g.opp); }
+      if (b && b.a) { const vs = []; const mon = +String(d.date).slice(5, 7); if (mon === 7 || mon === 8) vs.push("한여름 더위(타자 유리)"); for (const sd of [b.a, b.h]) { const me = sd.t === S.user; for (const tg of (sd.tags || [])) vs.push(tg.k === "trip" ? `${me ? "우리" : "상대"} ${tg.w} 피로` : `${me ? "우리" : "상대"} ${tg.w}`); } g.vars = vs; }
       L.games.push(g); S.feed = S.feed || []; S.feed.push(g); if (S.feed.length > 400) S.feed.splice(0, S.feed.length - 400);
       const st = U().streak; if ([4, 6, 8, 10].includes(Math.abs(st))) { g.big = true; g.text = (g.text ? g.text + " · " : "") + (st > 0 ? st + "연승" : -st + "연패"); }
       try { prDaily(di, g); } catch (e) { console.error(e); }
@@ -4636,6 +4681,7 @@ function liveBoard(g) {
       <div class="sboard"><div class="sb-t">${teamSq(b.a.t, "lg")}<small>원정 · ${tr(b.a.t)}</small></div><div class="sb-s"><b class="${b.a.R > b.h.R ? "" : "dim"}">${b.a.R}</b><i>:</i><b class="${b.h.R > b.a.R ? "" : "dim"}">${b.h.R}</b></div><div class="sb-t">${teamSq(b.h.t, "lg")}<small>홈 · ${tr(b.h.t)}</small></div></div>
       <div class="lgrid" style="--n:${n}"><span></span>${Array.from({ length: n }, (_, i) => `<span class="muted">${i + 1}</span>`).join("")}<b class="muted">R</b><span class="muted">H</span>${lrow(b.a)}${lrow(b.h)}</div>
       ${g.text ? `<p class="headline ${g.res === "L" ? "lose" : ""}">${esc(g.text)}</p>` : ""}
+      ${g.vars && g.vars.length ? `<p class="xs varline">오늘의 변수 · ${g.vars.map(esc).join(" · ")}</p>` : ""}
       ${g.mor && g.mor.length ? `<p class="xs morline">팀 사기 ${g.mor.map(m => `<span class="${m.v > 0 ? "up" : "dn"}">${m.v > 0 ? "+" : "−"}${Math.abs(m.v).toFixed(1)}</span> ${esc(m.w)}`).join(" · ")}</p>` : ""}
       <div class="wsl"><span>승 <b>${g.wp ? nm(g.wp) : "-"}</b></span><span>세 <b>${sv ? nm(sv) : "-"}</b></span><span>패 <b>${g.lp ? nm(g.lp) : "-"}</b></span></div>
     </section>
@@ -5143,7 +5189,7 @@ function act2(a, el) {
     case "rtKind": UI.rt.kind = v; UI.rt.k = null; render(); break;
     case "rtTab": UI.rt.tab = v; UI.rt.k = null; render(); break;
     case "rtSort": if (UI.rt.k === v) UI.rt.dir *= -1; else { UI.rt.k = v; UI.rt.dir = -1; } render(); break;
-    case "luRec": { const t = U(); const h = UI.sub.hand; t.lu[h] = recLineup(t, h).map(x => ({ pid: x.p.id, pos: x.pos })); flash("코칭스태프 추천대로 바꿨어요"); scheduleSave(); render(); break; }
+    case "luRec": { const t = U(); const h = luHand(t); t.lu[h] = recLineup(t, h).map(x => ({ pid: x.p.id, pos: x.pos })); flash("코칭스태프 추천대로 바꿨어요"); scheduleSave(); render(); break; }
     case "tacSub": UI.sub.tac = v; UI.sel = null; render(); break;
   }
 }
@@ -5681,9 +5727,11 @@ function act(a, el) {
     case "editP": UI.modal.edit = !UI.modal.edit; render(); break;
     case "preset": { const t = U(); const pr = E.PRESETS[v]; Object.assign(t.tac, { preset: v, hook: pr.hook, pen: pr.pen, rest: pr.rest, rot: pr.rot, ops: pr.ops, dev: pr.dev }); scheduleSave(); render(); break; }
     case "tacSet": { const t = U(); const k = el.dataset.k; t.tac[k] = k === "dev" ? v === "1" : +v; t.tac.preset = matchPreset(t.tac); scheduleSave(); render(); break; }
-    case "luManual": { const t = U(); for (const h of ["R", "L"]) t.lu[h] = currentLineup(t, h).map(x => ({ pid: x.p.id, pos: x.pos })); t.lu.auto = false; scheduleSave(); render(); break; }
+    case "luManual": { const t = U(); for (const h of ["R", "L"]) t.lu[h] = currentLineup(t, t.lu.split ? h : "R").map(x => ({ pid: x.p.id, pos: x.pos })); t.lu.auto = false; scheduleSave(); render(); break; }
+    case "luSplit": { const t = U(); t.lu.split = true; if (!t.lu.auto && t.lu.R) t.lu.L = t.lu.R.map(x => ({ ...x })); UI.sub.hand = "R"; flash("좌완 상대 라인업을 따로 짤 수 있어요. 처음엔 같은 라인업으로 시작해요"); scheduleSave(); render(); break; }
+    case "luMerge": { const t = U(); t.lu.split = false; UI.sub.hand = "R"; flash("우완용 라인업 하나로 합쳤어요"); scheduleSave(); render(); break; }
     case "luAuto": { const t = U(); t.lu.auto = true; t.lu.R = t.lu.L = null; scheduleSave(); render(); break; }
-    case "luCopy": { const t = U(); const h = UI.sub.hand; t.lu[h === "R" ? "L" : "R"] = t.lu[h].map(x => ({ ...x })); flash("반대쪽 라인업에 복사했어요"); scheduleSave(); break; }
+    case "luCopy": { const t = U(); const h = luHand(t); t.lu[h === "R" ? "L" : "R"] = t.lu[h].map(x => ({ ...x })); flash("반대쪽 라인업에 복사했어요"); scheduleSave(); break; }
     case "luTap": luTap(v); break;
     case "fieldTap": fieldTap(v); break;
     case "pendingApply": if (UI.pendingOp) { UI.pendingOp(); UI.pendingOp = null; scheduleSave(); } UI.modal = null; render(); break;
@@ -5727,7 +5775,7 @@ function act(a, el) {
 function matchPreset(tc) { for (const [k, v] of Object.entries(E.PRESETS)) if (v.hook === tc.hook && v.pen === tc.pen && v.rest === tc.rest && v.rot === tc.rot && v.ops === tc.ops && v.dev === tc.dev) return k; return "사용자 지정"; }
 function luTap(id) {
   const t = U(); if (t.lu.auto) { UI.modal = { type: "player", id }; render(); return; }
-  const hand = UI.sub.hand; const lu = t.lu[hand];
+  const hand = luHand(t); const lu = t.lu[hand];
   if (!UI.sel) { UI.sel = { id }; render(); return; }
   const a = UI.sel.id, b = id; UI.sel = null;
   if (a === b) { render(); return; }
@@ -5739,7 +5787,7 @@ function luTap(id) {
 function penMsg(p, pos) { const pen = E.eligibleAt(p, pos); return pen ? `${p.n} ${E.POS_KO[pos]} 수비 −${pen}` : ""; }
 function fieldTap(id) {
   const t = U(); if (t.lu.auto) { UI.modal = { type: "player", id }; render(); return; }
-  const lu = t.lu[UI.sub.hand];
+  const lu = t.lu[luHand(t)];
   if (!UI.sel) { UI.sel = { id }; render(); return; }
   const a = UI.sel.id, b = id; UI.sel = null; if (a === b) { render(); return; }
   const ia = lu.findIndex(x => x.pid === a), ib = lu.findIndex(x => x.pid === b);
@@ -5853,7 +5901,7 @@ document.addEventListener("change", e => {
   else if (el.id === "budIn") { UI.unlim = false; UI.budget = Math.max(120, Math.round(parseFloat(el.value) || 190)); render(); }
   else if (["drPos", "drTeam", "drSort"].includes(el.id)) { UI.drf[{ drPos: "pos", drTeam: "team", drSort: "sort" }[el.id]] = el.value; const r = $("#drResults"); if (r) r.innerHTML = drResults(); }
   else if (el.id === "trCash") { UI.trade.cash = Math.max(0, Math.min(50, parseFloat(el.value) || 0)); render(); }
-  else if (a === "posSel") { const t = U(); const lu = t.lu[UI.sub.hand]; const s = lu.find(x => x.pid === el.dataset.v); if (s) { const me = P(s.pid); if (E.eligibleAt(me, el.value) == null) { flash(`${me.n}은(는) ${E.POS_KO[el.value]}를 볼 수 없어요.`); render(); return; } const other = lu.find(x => x.pos === el.value && x !== s); if (other) { const op = P(other.pid); if (E.eligibleAt(op, s.pos) == null) { flash(`${op.n}은(는) ${E.POS_KO[s.pos]}로 옮길 수 없어서 바꿀 수 없어요.`); render(); return; } other.pos = s.pos; } s.pos = el.value; } scheduleSave(); render(); }
+  else if (a === "posSel") { const t = U(); const lu = t.lu[luHand(t)]; const s = lu.find(x => x.pid === el.dataset.v); if (s) { const me = P(s.pid); if (E.eligibleAt(me, el.value) == null) { flash(`${me.n}은(는) ${E.POS_KO[el.value]}를 볼 수 없어요.`); render(); return; } const other = lu.find(x => x.pos === el.value && x !== s); if (other) { const op = P(other.pid); if (E.eligibleAt(op, s.pos) == null) { flash(`${op.n}은(는) ${E.POS_KO[s.pos]}로 옮길 수 없어서 바꿀 수 없어요.`); render(); return; } other.pos = s.pos; } s.pos = el.value; } scheduleSave(); render(); }
   else if (el.id === "importFile" && el.files && el.files[0]) { const fr = new FileReader(); fr.onload = () => { try { const s = hydrate(fr.result); if (!s) throw 0; S = s; UI.modal = null; saveNow(); render(); flash("백업을 불러왔어요"); } catch (er) { flash("이 파일은 단장의 시즌 백업이 아니에요"); } }; fr.readAsText(el.files[0]); }
 });
 document.addEventListener("input", e => {
