@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.6.1</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.6.2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -2229,7 +2229,11 @@ function initEconomy(S) {
   for (const p of S.fpool || []) p.sal = Math.max(1.5, p.sal);
   for (const T of S.teams) { recalcPayroll(S, T); T.cap = Math.round(T.payroll * 1.1 * 10) / 10; T.cap0 = T.cap; }
 }
-function revealGems(S) { for (const p of Object.values(S.players).concat(S.fpool || [])) if (p.gb != null) p.gbShown = true; S.gemsShown = true; }
+// 원석 보너스 열리는 날: 개막 30% · 시즌 초 25% · 중반 30% · 막판 15%
+function gemDay(S, r) { const n = (S.sched || []).length || 200, u = r(); return u < .30 ? 0 : Math.floor(n * (u < .55 ? .05 + r() * .2 : u < .85 ? .25 + r() * .35 : .6 + r() * .3)); }
+function revealGems(S) { for (const p of Object.values(S.players).concat(S.fpool || [])) if (p.gb != null && !p.gbShown) { if (p.gbDay == null) p.gbDay = gemDay(S, rnd); if (p.gbDay <= (S.day || 0)) p.gbShown = true; } S.gemsShown = true; }
+// 시즌 중: 열릴 날이 된 원석 보너스 공개
+function unlockGems(S) { if (!S.gemsShown) return; for (const p of Object.values(S.players)) if (p.gb != null && !p.gbShown && p.gbDay != null && S.day >= p.gbDay) { p.gbShown = true; if (p.t === S.user) S.news.push({ k: "gem", pid: p.id, gb: p.gb, day: S.day }); } }
 // 예산 초과 패널티(우리 팀): 초과 1%마다 능력치 −0.2%, 최대 −2%
 function updateOverPen(S) {
   const T = team(S, S.user); if (!T) return;
@@ -2735,7 +2739,7 @@ function simGame0(S, home, away, day, opts = {}) {
   }
   function eff(p, bonus, isPit, extra, side) {
     const f = p.form + bonus + (extra || 0) + (p.chem || 0) - (side && side.ovPen ? side.ovPen * .6 : 0);
-    const g = p.gb || 0;
+    const g = p.gbShown ? p.gb || 0 : 0;
     if (isPit) return { vel: p.r.vel + f, brk: p.r.brk + f + g, stf: p.r.stf + f + g, ctl: p.r.ctl + f + g, clu: p.r.clu };
     return { con: p.r.con + f + g, pow: p.r.pow + f + g, eye: p.r.eye + f + g, pat: p.r.pat + f, spd: p.r.spd };
   }
@@ -3005,7 +3009,7 @@ let TEAMS_ID = [];
 function playDay(S) {
   const d = S.sched[S.day];
   if (!d) return false;
-  updateOverPen(S);
+  updateOverPen(S); unlockGems(S);
   if (d.off) { dailyRecover(S, true); S.day++; return true; }
   d.res = [];
   const rk0 = {}; if (BAL.evMor) standings(S).forEach((r, i) => rk0[r.id] = i + 1);
@@ -3972,8 +3976,9 @@ let S = null, BASE = null;
 const UI = { tab: "home", sub: { meet: "room", tac: "plan", roster: "1", rec: "stand", hand: "R" }, sel: null, modal: null, busy: false, msg: null, recKey: "AVG", recMine: false, calM: null, recPos: "H" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const GAME_VER = "1.6.1"; // 게임 버전 — 업데이트할 때마다 올려요
+const GAME_VER = "1.6.2"; // 게임 버전 — 업데이트할 때마다 올려요
 const CHANGELOG = [
+  { v: "1.6.2", d: "2026.11.06", items: ["원석 숨은 시즌 보너스가 개막 때 한꺼번에 열리지 않고, 선수마다 개막·시즌 초·중반·막판 중 언젠가 열려요", "보너스가 열리면 보고와 뉴스로 알려줘요 (열리기 전엔 경기에도 반영 안 돼요)"] },
   { v: "1.6.1", d: "2026.11.06", items: ["첫 화면 선수 데이터 설명을 실제 쓰는 데이터에 맞게 고침 (2024~2026 기록 + 통산 기록, 나이·투타·연봉은 실제 정보)"] },
   { v: "1.6", d: "2026.11.06", items: ["기록이 적은 선수는 백업 선수 수준에서 출발 (수비도 뛴 경기가 적으면 보통 쪽으로) — 몇 타석만 뛴 선수가 스타급으로 나오던 문제 수정", "선수 정보: 원석 시즌 보너스를 막대에 표시 (늘어난 만큼 초록, 줄어든 만큼 빨강)", "시즌이 시작되면 선수 정보·선수단 카드에 예상 대신 이번 시즌 기록", "선수단 1군·2군: 투수/타자 버튼으로 나눠 보기, 정렬은 오른쪽 위 작은 선택 칸", "1군이 꽉 찼을 때 올리기를 누르면 내릴 선수를 골라 바로 맞교대", "5선발 건너뛰기를 켜면 5선발이 흐리게 보여요", "보통·어려움 구단의 빈자리 채우기 조정"] },
   { v: "1.5", d: "2026.11.06", items: ["트레이드 개편: 휴대폰은 보낼/받을 선수 버튼 전환, PC는 좌우로 나란히 (넓으면 두 줄씩)", "전체 구단 보기 · 타자/투수 거르기 · 고른 선수의 이번 시즌 기록 · 골라도 목록 위치 그대로", "트레이드하면 전력 순위 미리보기 · 상대 단장이 급한 자리(그 자리 선수는 가치 10% 더) · 역제안 · 이번 시즌 트레이드 기록", "AI 제안: 1대1 · 2대1 · 1대2, 모자라면 추가금을 얹어 줘요 · 추가금 1억 가치 2배, 최대 25억", "선수단 1군·2군: 포지션별·실력순·나이순·연봉순 정렬", "코칭스태프 보고의 '2군 ○○이 1군 ○○보다 나아 보여요'를 누르면 비교하고 바로 바꿀 수 있어요 · 마운드에 2군 추천 투수", "PC 화면 정리: 타순은 운영 방침과 나란히(따로 스크롤), 마운드·회의·기록실 두 칸 배치", "지난 보고·리포트·원석 성장·외국인 후보·우리 경기는 접어 두기 · 애매한 두 줄 글씨 정리"] },
@@ -4857,7 +4862,7 @@ function playerModal(md) {
     + tb(["피안타", "피홈런", "볼넷", "사구", "탈삼진", "실점", "자책", "9이닝 삼진", "BABIP", "투구수"], [st.H, st.HR, st.BB, st.HBP, st.SO, st.R, st.ER, st.outs ? (st.SO * 27 / st.outs).toFixed(1) : "-", bbT, st.NP]);
   else { const hl = hitLine(st); stt = tb(["경기", "타석", "타수", "타율", "출루율", "장타율", "OPS", "BABIP", "WAR", "홈런"], [st.G, st.PA, st.AB, hl.avg, hl.obp, avg3(st.AB ? (st.H + st.D + 2 * st.T + 3 * st.HR) / st.AB : 0), hl.ops, bbT, wr, st.HR])
     + tb(["안타", "2루타", "3루타", "타점", "득점", "볼넷", "사구", "삼진", "도루", "도루 실패"], [st.H, st.D, st.T, st.RBI, st.R, st.BB, st.HBP, st.SO, st.SB, st.CS]); }
-  const gemTxt = p.gb != null ? (p.gbShown ? ` · 숨은 시즌 보너스 <b class="${p.gb >= 0 ? "good" : "bad"}">${p.gb >= 0 ? "+" : ""}${p.gb}</b> (주요 능력치에 더해져요)` : " · 숨은 시즌 보너스 <b>?</b> — 개막 때 공개돼요") : "";
+  const gemTxt = p.gb != null ? (p.gbShown ? ` · 숨은 시즌 보너스 <b class="${p.gb >= 0 ? "good" : "bad"}">${p.gb >= 0 ? "+" : ""}${p.gb}</b> (주요 능력치에 더해져요)` : " · 숨은 시즌 보너스 <b>?</b> — 시즌 중 언젠가 열려요") : "";
   const clsNote = (p.cls === "스타" ? `출전하면 팀 전체 능력치 ${p.star2 ? "+2" : "+1"} (스타 버프는 합쳐서 최대 +${E.BAL.starCap})` : p.cls === "주전" ? "리그 상위 35% 안에 드는 주전급 선수예요" : p.cls === "실속" ? `부상 위험 −40%, 컨디션 기복이 절반 · 가성비 ${vfm(p)}` : `25세 이하 원석 · 잠재력 ${p.pot ? p.pot.lo + "~" + p.pot.hi : "-"}`) + gemTxt;
   const raw = p.raw || {};
   const src = p.src === "virt" ? "실제 기록이 없는 가상 선수예요." : raw.src === "import" ? "붙여넣은 KBO 기록으로 계산했어요." : "2026 정규시즌 최종 기록으로 계산했어요. '추정' 표시는 기록표에 없어 추정한 값이에요.";
@@ -4946,6 +4951,7 @@ function coachLines() {
     if (n.k === "inj" && p) lines.push(`🩹 <b>${esc(p.n)}</b> ${esc(n.note)} — ${n.d}일 결장 예상`);
     else if (n.k === "back" && p) lines.push(`✅ <b>${esc(p.n)}</b> 부상에서 돌아왔어요`);
     else if (n.k === "dev") lines.push(`📈 원석 육성: ${n.n}명 주요 능력치 +2 (${(n.n * .5).toFixed(1)}억)`);
+    else if (n.k === "gem" && p) lines.push(`💎 <b>${esc(p.n)}</b> 숨은 시즌 보너스가 열렸어요: <b class="${n.gb >= 0 ? "good" : "bad"}">${n.gb >= 0 ? "+" : ""}${n.gb}</b>${n.gb >= 15 ? " 대박!" : ""}`);
     else if (n.k === "rel") lines.push(`${esc(n.n)} 방출`);
   }
   const l1 = mine.filter(p => p.lvl === 1 && p.inj === 0);
@@ -5150,7 +5156,7 @@ function candCard(p, tier, slot, cur, open, own, mine) {
   const bars = KEY4(p).map(([kk, l]) => statBar(l, RV(p.r[kk]))).join("");
   const seen = S.dr.potSeen && S.dr.potSeen[p.id]; const pl = DRAFT.potLeft(S);
   const potLine = p.cls === "원석" && p.pot ? `<div class="potrow"><span class="xs">잠재력 ${seen ? `<b>${p.pot.tr}</b> <span class="muted">(예상 ${p.pot.lo}~${p.pot.hi})</span>` : `예상 ${p.pot.lo}~${p.pot.hi}`}</span>${seen ? `<span class="potcnt">잠재력 확인 · ${pl}/${DRAFT.POT_LOOKS}</span>` : `<button class="ghost small" data-act="drPot" data-v="${p.id}" ${pl > 0 ? "" : "disabled"}>잠재력 확인 · ${pl}/${DRAFT.POT_LOOKS}</button>`}</div>` : "";
-  const gem = (potLine) + (p.cls === "원석" && p.gb != null && !p.gbShown ? `<p class="xs gemnote">숨은 시즌 보너스 ? — 개막 때 공개돼요 (몸값은 평균 +6 기준)</p>` : "");
+  const gem = (potLine) + (p.cls === "원석" && p.gb != null && !p.gbShown ? `<p class="xs gemnote">숨은 시즌 보너스 ? — 개막~시즌 막판 사이에 열려요 (몸값은 평균 +6 기준)</p>` : "");
   return `<article class="cand c-${k} ${mine ? "mine" : ""}">${mine ? `<span class="mine-tag">지금 이 자리 선수</span>` : ""}
     <button class="candtop" data-act="drOpen" data-v="${p.id}" aria-expanded="true"><span class="cn">${chip}<b>${esc(p.n)}</b><small class="muted">${info}</small></span><span class="cp"><span class="cpn">${won(pr).replace("억", "")}<small>억</small></span><em>${priceFormula(p)}</em></span></button>
     <div class="xbox">${xboxes(p).map(([l, v]) => `<div><small>${l}</small><b>${v}</b></div>`).join("")}</div>
@@ -5228,7 +5234,8 @@ function drFinish() {
   DRAFT.finish(S);
   const chem = S.chemList || [];
   const gems = E.teamPlayers(S, S.user).filter(p => p.gb != null && p.src !== "virt").sort((a, b) => b.gb - a.gb);
-  const gemTxt = gems.length ? `💎 원석 숨은 시즌 보너스 공개: ${gems.map(p => `<b>${esc(p.n)}</b> ${p.gb >= 0 ? "+" : ""}${p.gb}${p.gb >= 15 ? " 대박!" : ""}`).join(", ")}` : "우리 팀에 원석이 없어요.";
+  const gOpen = gems.filter(p => p.gbShown), gWait = gems.length - gOpen.length;
+  const gemTxt = gems.length ? (gOpen.length ? `💎 개막과 함께 열린 원석 보너스: ${gOpen.map(p => `<b>${esc(p.n)}</b> ${p.gb >= 0 ? "+" : ""}${p.gb}${p.gb >= 15 ? " 대박!" : ""}`).join(", ")}` : "💎 개막과 함께 열린 원석 보너스는 없어요.") + (gWait ? ` 나머지 ${gWait}명은 시즌 중에 하나씩 열려요.` : "") : "우리 팀에 원석이 없어요.";
   S.inbox.push({ id: "w1", k: "report", title: "선수단 구성 완료", when: "", lines: [`25명 뽑기에 ${won(S.drDone.spent)}을 썼어요 (${S.drDone.unlim ? "무제한 예산" : `예산 ${won(S.drDone.budget)}`}).${over > 0 ? ` 예산을 ${over}% 넘겨서 팀 능력치 −${Math.min(2, over * .2).toFixed(1)}%가 붙어요. 시즌 중 수익이 들어오면 줄어들어요.` : ""}`, gemTxt, chem.length ? `케미 보너스: ${chem.map(c => `${esc(c.t)} 출신 ${c.n}명`).join(", ")} — 그 선수들 능력치 +1 (우리 구단 출신이 10명 넘으면 +2)` : "같은 팀 출신 4명 이상 묶음이 없어 케미 보너스는 없어요.", "육성 선수 8명이 함께 들어왔어요. 원래 우리 구단에 있던 선수 중 뽑지 않은 선수는 다른 구단으로 갔어요.", `구단주 목표는 <b>${esc(S.goal.text)}</b>예요.`] });
   S.tacSnap = tacState(); UI.tab = "home"; UI.dg = null; saveNow(); render(); window.scrollTo(0, 0);
 }
@@ -5320,6 +5327,7 @@ function prDaily(di, g) {
   const tm = U();
   if (g && [4, 6, 8, 10, 12].includes(tm.streak)) prAdd({ tag: "구단", title: `${tm.id}, 파죽의 ${tm.streak}연승`, sum: `최근 ${tm.streak}경기를 모두 이겼다. 시즌 ${tm.w}승 ${tm.l}패, ${rankOf(S.user)}위.`, p: [`${jo(tm.name, "이", "가")} ${tm.streak}연승을 달렸다. 투타 균형이 맞아떨어지며 분위기가 최고조다.`, `현재 순위는 ${rankOf(S.user)}위. 팀 사기도 ${Math.round(tm.morale)}까지 올라왔다.`], link: { act: "tab", v: "rec", l: "기록실" } });
   if (g && [-3, -5, -7, -10].includes(tm.streak)) prAdd({ tag: "구단", title: `${tm.id}, ${-tm.streak}연패 수렁…반등 카드는?`, sum: `최근 ${-tm.streak}경기를 내리 졌다. 시즌 ${tm.w}승 ${tm.l}패, ${rankOf(S.user)}위.`, p: [`${jo(tm.name, "이", "가")} ${-tm.streak}연패에 빠졌다. 타선 침체와 마운드 불안이 겹쳤다.`, `단장의 선택이 필요한 시점이다. 라인업 조정이나 2군 콜업도 검토해 볼 만하다.`], link: { act: "tab", v: "tac", l: "전술 바꾸러 가기" } });
+  for (const n of (S.news || [])) if (n.day === di && n.k === "gem") { const p = P(n.pid); if (p) prAdd({ tag: "원석", title: `${p.n}, 숨은 힘 ${n.gb >= 0 ? "+" : ""}${n.gb}${n.gb >= 15 ? "…대박 터졌다" : n.gb < 0 ? "…기대엔 못 미쳐" : ""}`, sum: `코칭스태프가 ${p.n}의 달라진 모습을 확인했다.`, p: [`${tm.name} ${jo(p.n, "이", "가")} 시즌 보너스 ${n.gb >= 0 ? "+" : ""}${n.gb}를 받았다. 주요 능력치에 바로 더해진다.`], link: { act: "player", v: p.id, l: `${p.n} 선수 정보` } }); }
   for (const n of (S.news || [])) if (n.day === di && n.k === "inj") { const p = P(n.pid); if (p) prAdd({ tag: "부상", title: `${p.n}, ${n.note}…${n.d}일 이탈 예상`, sum: `의무팀은 복귀까지 약 ${n.d}일이 걸릴 것으로 봤다.`, p: [`${tm.name} ${jo(p.n, "이", "가")} ${jo(n.note, "으로", "로")} 전력에서 빠진다. 의무팀은 복귀까지 약 ${n.d}일을 예상했다.`, `${posKo(p)} 자리 공백을 누가 메울지가 관심사다.`], link: { act: "player", v: p.id, l: `${p.n} 선수 정보` } }); }
   // 불펜 과부하 (10일에 한 번)
   if (di - (S.prPenDay || -99) >= 10) { const roles = E.bullpenRoles(S, tm); const tired = [roles.closer].concat(roles.setup || []).filter(p => p && p.cond < 60); if (tired.length >= 2) { S.prPenDay = di; prAdd({ tag: "구단", title: `불펜 과부하 경고등…필승조 ${tired.length}명 체력 60 아래`, sum: `${tired.map(p => p.n).join(", ")}의 체력이 크게 떨어졌다.`, p: [`${tm.name} 필승조에 빨간불이 켜졌다. ${tired.map(p => `${p.n}(${Math.round(p.cond)})`).join(", ")} 모두 체력이 60 아래다.`, `선발에게 더 긴 이닝을 맡기거나, 2군 투수를 올리는 방법을 생각해 볼 때다.`], link: { act: "tab", v: "tac", l: "전술 · 마운드 운영" } }); } }
