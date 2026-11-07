@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.7</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.7.1</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -4022,8 +4022,9 @@ let S = null, BASE = null;
 const UI = { tab: "home", sub: { meet: "room", tac: "plan", roster: "1", rec: "stand", hand: "R" }, sel: null, modal: null, busy: false, msg: null, recKey: "AVG", recMine: false, calM: null, recPos: "H" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const GAME_VER = "1.7"; // 게임 버전 — 업데이트할 때마다 올려요
+const GAME_VER = "1.7.1"; // 게임 버전 — 업데이트할 때마다 올려요
 const CHANGELOG = [
+  { v: "1.7.1", d: "2026.11.07", items: ["업데이트 내역 글씨 크기를 통일했어요", "불펜·벤치 묶음 다른 구성 보기: 선수 이름·팀·기록이 글자마다 슬롯머신처럼 굴러 바뀌어요"] },
   { v: "1.7", d: "2026.11.06", items: ["화면에 움직임이 생겼어요: 능력치 막대가 차오르고(시즌 보너스는 이어서 초록으로), 바뀐 숫자는 반짝, 순위가 바뀌면 줄이 미끄러지며 ▲▼ 표시", "탭이 좌우로 밀리며 바뀌고, 휴대폰은 화면을 옆으로 밀면 옆 탭으로 넘어가요", "창은 휴대폰에선 아래서 올라오고 PC에선 가운데서 열려요 · 버튼은 누르면 살짝 눌려요", "홈 맨 위에 뉴스 줄이 생겼어요 (눌러서 기사 보기)", "중계: 점수 날 때 숫자가 튀고, 이닝 칸이 차오르고, 주자가 나가면 베이스에 불이 켜져요", "드래프트: 뽑으면 카드에 불이 켜지고 칩이 차오른 뒤 다음 자리로 · 뽑은 선수의 '계약 완료'를 꾹 누르면 '계약 취소'로 바뀌고 손을 떼면 취소", "결과 공유 카드: 기본 모드는 난이도(쉬움·보통·어려움)를 함께 보여줘요", "2군 추천 투수는 같은 보직끼리 비교해요", "드래프트: 바꾸기를 누르면 원래 계약이 빨간 '계약 취소'로 깜빡이며 바뀌어요 · 화면을 옆으로 밀면 옆 포지션으로 · 묶음 다른 구성은 이름이 또르륵 굴러 바뀌어요 · 야수 묶음엔 스타가 드물게(스타 하위 50%만)", "드래프트 순서: 야수 9명 → 선발 5명 → 불펜 묶음 → 야수 묶음 · 묶음도 '다른 묶음 보기'로 다른 구성을 볼 수 있어요 (5번)", "첫 화면·드래프트에도 움직임: 제목과 구단 카드가 차례로 등장, 선수를 뽑으면 자리 칸이 톡 튀고 남은 예산이 반짝", "화면 안 작은 메뉴(1군/2군 등)는 누른 쪽으로 밀리고, 접힌 칸은 펼칠 때 내려와요", "원석 보너스가 막 열린 선수는 막대가 반짝, 연승 중엔 배지가 두근, 우승하면 불꽃놀이", "기기에서 '움직임 줄이기'를 켜면 모두 꺼져요"] },
   { v: "1.6.3", d: "2026.11.06", items: ["2군 추천 투수: 선발은 1군 선발과, 불펜·마무리는 1군 불펜과만 비교해서 추천해요"] },
   { v: "1.6.2", d: "2026.11.06", items: ["원석 숨은 시즌 보너스가 개막 때 한꺼번에 열리지 않고, 선수마다 개막·시즌 초·중반·막판 중 언젠가 열려요", "보너스가 열리면 보고와 뉴스로 알려줘요 (열리기 전엔 경기에도 반영 안 돼요)"] },
@@ -4224,7 +4225,7 @@ function lineInfo(el) {
 function fitText(root) {
   if (!root) return;
   for (const el of root.querySelectorAll(FIT_SEL)) {
-    if (el.dataset.fit === "1" || !el.offsetParent || el.closest(".prow .pn")) continue; // 목록 줄은 글씨 크기 통일
+    if (el.dataset.fit === "1" || !el.offsetParent || el.closest(".prow .pn, .clog")) continue; // 목록 줄은 글씨 크기 통일
     const t = (el.textContent || "").trim(); if (t.length < 4 || t.length > 90) continue;
     if (el.querySelector("p, li, ul, div, table, button, select, input")) continue;
     let li = lineInfo(el); if (!li || li.n !== 2) continue;
@@ -6931,6 +6932,33 @@ var MO = (function () {
       whenSeen(pl.closest("svg") || pl, () => { const a = an(pl, [{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { d: 1100, e: "io" }); const fin = () => { pl.style.strokeDasharray = ""; pl.style.strokeDashoffset = ""; if (dot) { dot.style.opacity = ""; an(dot, [{ opacity: 0, transform: "scale(0)" }, { opacity: 1, transform: "none" }], { d: 300, e: "back" }); } }; if (a) a.onfinish = fin; else fin(); }); });
   }
 
+  /* 슬롯머신: 글자 하나하나 굴러 바뀜 */
+  const HANG = "가나다라마바사아자차카타파하김이박최정강조윤장임한오서신권황안송류홍전고문양손배백허노구곽원채", DIGS = "0123456789";
+  function rollChars(el, od, nw, base, pool) {
+    if (od === nw || RM()) return; const H = el.getBoundingClientRect().height || 18, n = Math.max(nw.length, od.length);
+    el.textContent = ""; Object.assign(el.style, { display: "inline-flex", height: H + "px", overflow: "hidden", verticalAlign: "bottom" });
+    let left = n; const done = () => { if (--left === 0) { el.textContent = nw; el.style.height = el.style.overflow = el.style.display = el.style.verticalAlign = ""; } };
+    for (let c = 0; c < n; c++) { const a = od[c] || "", z = nw[c] || ""; const box = document.createElement("span"); box.style.cssText = `display:inline-block;height:${H}px;overflow:hidden;white-space:pre`;
+      const col = document.createElement("span"); col.style.cssText = "display:flex;flex-direction:column";
+      const same = a === z, isD = /\d/.test(z || a), P = isD ? DIGS : pool, spin = same ? 0 : 3 + Math.floor(Math.random() * 3);
+      const seq = [a]; for (let q = 0; q < spin; q++) seq.push(/[ ·.\-]/.test(z) ? z : P[Math.floor(Math.random() * P.length)]); if (!same) seq.push(z);
+      col.innerHTML = seq.map(t => `<span style="display:block;height:${H}px;line-height:${H}px;text-align:center">${t ? esc(t) : "&nbsp;"}</span>`).join("");
+      box.appendChild(col); el.appendChild(box);
+      if (same) { done(); continue; }
+      if (!z) box.style.width = box.getBoundingClientRect().width + "px";
+      const a1 = an(col, [{ transform: "translateY(0)" }, { transform: `translateY(${-(seq.length - 1) * H}px)` }], { d: 560 + c * 90, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" });
+      if (!z) an(box, [{ width: box.style.width }, { width: "0px" }], { d: 400, dl: base + 300 + c * 90, e: "cubic-bezier(.4,0,.2,1)", f: "forwards" });
+      if (a1) a1.onfinish = done; else done(); }
+  }
+  function rollBlock(nwEl, oldEl, base) { // 팀 칩: 이전 칩이 위로 올라가고 새 칩이 아래서 올라옴
+    if (RM()) return; const H = nwEl.getBoundingClientRect().height || 18; const o = oldEl.cloneNode(true);
+    const wrap = document.createElement("span"); wrap.style.cssText = `display:inline-flex;flex-direction:column;height:${H}px;overflow:hidden;vertical-align:middle`;
+    nwEl.replaceWith(wrap); const inner = document.createElement("span"); inner.style.cssText = "display:flex;flex-direction:column"; inner.append(o, nwEl); wrap.appendChild(inner);
+    [o, nwEl].forEach(x => { x.style.height = H + "px"; x.style.flex = "none"; });
+    const a = an(inner, [{ transform: "translateY(0)" }, { transform: `translateY(${-H}px)` }], { d: 620, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" });
+    const fin = () => { nwEl.style.height = nwEl.style.flex = ""; wrap.replaceWith(nwEl); }; if (a) a.onfinish = fin; else fin();
+  }
+
   /* 차례로 등장 */
   const rise = (els, o) => { o = o || {}; [...els].slice(0, o.max || 14).forEach((e, k) => an(e, [{ opacity: 0, transform: `translateY(${o.y == null ? 12 : o.y}px)${o.s ? ` scale(${o.s})` : ""}` }, { opacity: 1, transform: "none" }], { d: o.d || 320, dl: (o.dl || 0) + k * (o.st || 40), e: o.e || "out", f: "backwards" })); };
   const pop = (e, col) => an(e, [{ transform: "scale(1)", backgroundColor: col || "var(--accent-soft)" }, { transform: "scale(1.08)", offset: .35 }, { transform: "scale(1)" }], { d: 520 });
@@ -6963,13 +6991,16 @@ var MO = (function () {
       const olds = p.cands ? [...p.cands.node.querySelectorAll(".pkg")] : []; const pool = [...d.querySelectorAll(".pkg .plink")].map(x => x.textContent);
       d.querySelectorAll(".pkg").forEach((card, ci) => { const oc = olds[ci];
         const on = oc ? [...oc.querySelectorAll(".plink")].map(x => x.textContent) : [];
-        card.querySelectorAll(".pkl li").forEach((li, k) => { const el = li.querySelector(".plink"); if (!el) return; const nw = el.textContent, od = on[k] || "";
-          if (od === nw) return; const mid = [0, 1].map(() => pool[Math.floor(Math.random() * pool.length)] || nw);
-          const h = el.getBoundingClientRect().height || 20; el.style.display = "inline-block"; el.style.height = h + "px"; el.style.overflow = "hidden"; el.style.verticalAlign = "bottom";
-          const col = document.createElement("span"); col.className = "mo-roll"; col.innerHTML = [od, ...mid, nw].map(t => `<span style="display:block;height:${h}px;line-height:${h}px">${esc(t)}</span>`).join("");
-          el.textContent = ""; el.appendChild(col);
-          const a = an(col, [{ transform: "translateY(0)" }, { transform: `translateY(${-3 * h}px)` }], { d: 520 + k * 70 + ci * 60, e: "cubic-bezier(.2,.6,.25,1)", f: "forwards" });
-          const fin = () => { el.textContent = nw; el.style.height = el.style.overflow = el.style.display = el.style.verticalAlign = ""; }; if (a) a.onfinish = fin; else fin(); });
+        const oli = oc ? [...oc.querySelectorAll(".pkl li")] : [];
+        card.querySelectorAll(".pkl li").forEach((li, k) => { const ol = oli[k]; const dl = k * 45 + ci * 40;
+          const el = li.querySelector(".plink"), oel = ol && ol.querySelector(".plink"); if (el) rollChars(el, oel ? oel.textContent : "", el.textContent, dl, HANG);
+          const sm = li.querySelector("small"), os = ol && ol.querySelector("small"); if (!sm) return;
+          const ch = sm.querySelector(".tchip"), och = os && os.querySelector(".tchip");
+          if (ch && och && ch.textContent !== och.textContent) rollBlock(ch, och, dl + 60);
+          // 칩 뒤 글자 (보직 · ERA): 숫자는 숫자끼리 굴러감
+          const tn = [...sm.childNodes].filter(n => n.nodeType === 3 && n.nodeValue.trim()), otx = os ? [...os.childNodes].filter(n => n.nodeType === 3 && n.nodeValue.trim()).map(n => n.nodeValue).join("") : "";
+          if (tn.length) { const nwT = tn.map(n => n.nodeValue).join(""); const sp = document.createElement("span"); sp.textContent = nwT; tn.forEach((n, x) => x ? n.remove() : n.replaceWith(sp)); rollChars(sp, otx, nwT, dl + 80, HANG); }
+        });
         const pr = card.querySelector(".price"), op = oc && oc.querySelector(".price"); if (pr && op && pr.textContent !== op.textContent) { const a0 = parseFloat(op.textContent), a1 = parseFloat(pr.textContent); if (!isNaN(a0) && !isNaN(a1)) { const t0 = performance.now(), D = 700; const st = t => { const x = Math.min(1, (t - t0) / D); pr.textContent = won(a0 + (a1 - a0) * (1 - Math.pow(1 - x, 3))); if (x < 1 && pr.isConnected) requestAnimationFrame(st); }; requestAnimationFrame(st); } } });
       return true;
     }
