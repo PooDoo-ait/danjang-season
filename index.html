@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.6.3</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.7</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -414,7 +414,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px
 @media (min-width:760px){.live-box{border-radius:20px}}
 .live-top{display:flex;align-items:center;gap:10px}
 .live-top b{flex:1;font-size:16px}
-.livedot{font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--seam);padding:2px 8px;border-radius:6px;animation:blink 1.4s infinite}
+.livedot{font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--seam);padding:2px 8px;border-radius:6px;animation:blink 2.4s ease-in-out infinite}
 .livedot.off{background:var(--muted);animation:none}
 @keyframes blink{50%{opacity:.45}}
 @media (prefers-reduced-motion:reduce){.livedot{animation:none}}
@@ -460,7 +460,7 @@ textarea{width:100%;border:1px solid var(--line);border-radius:12px;padding:10px
 .rankchart .cut{stroke:var(--seam);stroke-width:1.4;stroke-dasharray:5 4}
 .rankchart .ps-zone{fill:var(--accent-soft);opacity:.55}
 .rankchart .rl{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
-.rankchart .rdot{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.rankchart .rdot{transform-box:fill-box;transform-origin:center;fill:var(--accent);stroke:var(--surface);stroke-width:2}
 .rankchart .ax{font-size:10px;fill:var(--muted);font-family:var(--f-num)}
 .rankchart .cutl{fill:var(--seam);font-family:var(--f-body)}
 .sbars{display:flex;flex-direction:column;gap:7px}
@@ -1612,6 +1612,44 @@ details.fold.rule>summary{padding:4px 2px;font-weight:400}
 
 .rcount{display:none}
 @media (max-width:620px){.rcount{display:inline}}
+/* ===== ver 1.7 모션 ===== */
+.mvn{display:inline-block;border-radius:8px}
+.stb{display:inline-block;border-radius:999px}
+.stb.hot{color:var(--bad)}
+.ms,.tbl tr{position:relative}
+.mvar{font-style:normal;font-size:11px;font-weight:700;margin-left:4px;display:inline-block}
+.ms .mvar{position:absolute;right:-2px;top:50%;margin-top:-8px;background:var(--surface);border-radius:6px;padding:0 3px}
+.mvar.up{color:var(--good)} .mvar.dn{color:var(--bad)}
+.tkbar{display:flex;align-items:stretch;height:40px;background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
+.tklab{flex:none;display:flex;align-items:center;padding:0 12px;background:var(--seam);color:#fff;font-weight:700;font-size:12.5px;letter-spacing:.04em}
+.tkbox{position:relative;flex:1;min-width:0;overflow:hidden}
+.tkit{position:absolute;inset:0;display:block;width:100%;text-align:left;border:0;background:none;color:var(--ink);font:inherit;font-size:14px;font-weight:600;padding:0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;scale:none!important}
+.innbar{display:flex;gap:3px;margin:2px 0 0}
+.innbar i{flex:1;height:6px;border-radius:3px;background:var(--surface-2);transform-origin:left}
+.innbar i.f,.innbar i.f2{background:var(--accent)}
+.innbar i.h{background:linear-gradient(90deg,var(--accent) 50%,var(--surface-2) 50%)}
+.lprog b{background-image:linear-gradient(90deg,transparent 0,rgba(255,255,255,.35) 50%,transparent 100%);background-size:60px 100%;background-repeat:no-repeat;animation:lsheen 2.4s linear infinite}
+.livedot.off ~ * .lprog b,.live-top:has(.livedot.off) .lprog b{animation:none;background-image:none}
+@keyframes lsheen{from{background-position:-60px 0}to{background-position:calc(100% + 60px) 0}}
+canvas.fw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+@media (prefers-reduced-motion:reduce){.lprog b{animation:none;background-image:none}}
+
+html{overscroll-behavior-y:none}
+
+.candhead{margin:6px 0 4px}
+.candhead + .cands,.candhead ~ .cands{margin-top:8px}
+.slogan span{display:inline-block}
+
+.cbtn.signed{background:var(--good);color:#fff;border-color:var(--good);position:relative;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none}
+.cbtn.signed.armed{background:var(--bad);border-color:var(--bad)}
+.mo-hold{position:absolute;inset:0;background:rgba(0,0,0,.18);transform-origin:left;transform:scaleX(0);pointer-events:none}
+.cbtn.signed.armed .mo-hold{display:none}
+.cand{position:relative}
+.cand.mo-clip{overflow:hidden}
+.mo-sheen{position:absolute;top:0;bottom:0;left:0;width:40%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);pointer-events:none;z-index:2}
+.poschip{position:relative;overflow:hidden;isolation:isolate}
+.mo-cfill{position:absolute;inset:0;background:var(--good);opacity:.9;transform-origin:left;z-index:-1;pointer-events:none}
+
 </style>
 </head><body><div id="app"><div id="nojs" style="box-sizing:border-box;width:calc(100% - 32px);max-width:420px;margin:48px auto;padding:24px 20px;background:#fff;border:1px solid #e2e6df;border-radius:18px;font-family:system-ui,-apple-system,sans-serif;color:#16201a;line-height:1.6"><b style="font-size:18px">단장의 시즌</b><p style="margin:10px 0 0;font-size:15px">여기서는 게임이 실행되지 않아요.</p><p style="margin:6px 0 0;font-size:14px;color:#5f6b63">미리보기 화면은 게임 프로그램을 돌리지 않아요. 컴퓨터의 크롬에서 이 파일을 열거나, 휴대폰에서는 게임 링크로 열어 주세요.</p></div></div>
 <script>
@@ -3788,26 +3826,34 @@ function refreshAll(S) {
   }
   D.pkgs = makePkgs(S);
 }
+const PKG_RR = 5; // 묶음 다른 구성 보기 횟수
+function pkgLeft(S, kind) { const D = S.dr; D.pkgRoll = D.pkgRoll || {}; return PKG_RR - (D.pkgRoll[kind] || 0); }
+function pkgReroll(S, kind) { const D = S.dr; D.pkgRoll = D.pkgRoll || {}; if (pkgLeft(S, kind) <= 0) return "limit"; D.pkgRoll[kind] = (D.pkgRoll[kind] || 0) + 1; D.pkgs = makePkgs(S); return null; }
+function hs01(s) { let x = 2166136261; for (let i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); } return (x >>> 0) / 4294967296; }
 function makePkgs(S) {
-  const pl = pool(S);
+  const pl = pool(S); const RR = (S.dr && S.dr.pkgRoll) || {};
+  const nzOf = kind => { const n = RR[kind] || 0; return p => n ? (hs01(p.id + ":" + kind + ":" + n) - .5) * 1.6 : 0; }; // 다른 구성 보기: 점수에 흔들림
+  const nb = nzOf("bp"), nn = nzOf("bn");
   const rps = pl.filter(p => p.isP && p.role !== "SP");
   const sum = arr => r05(arr.reduce((a, p) => a + price(S, p), 0) * 0.9);
   const XC = new Map(); const X = p => { if (!XC.has(p.id)) XC.set(p.id, E.expect(p, true).xw); return XC.get(p.id); };
   const vfm = p => (X(p) + 1) / price(S, p);
   const bp = [];
-  const top = rps.slice().sort((a, b) => X(b) - X(a)).slice(0, 7);
+  const top = rps.slice().sort((a, b) => X(b) + nb(b) - X(a) - nb(a)).slice(0, 7);
   if (top.length === 7) bp.push({ k: "필승조", d: "리그 정상급 불펜으로 7명 — 비싸지만 뒷문이 단단해요", ids: top.map(p => p.id) });
-  const cheap = rps.filter(p => X(p) >= 0 && !top.slice(0, 3).includes(p)).sort((a, b) => vfm(b) - vfm(a)).slice(0, 7);
+  const cheap = rps.filter(p => X(p) >= 0 && !top.slice(0, 3).includes(p)).sort((a, b) => vfm(b) + nb(b) * .3 - vfm(a) - nb(a) * .3).slice(0, 7);
   if (cheap.length === 7) bp.push({ k: "물량", d: "가성비 좋은 중계 7명 — 싸고 고르게 던져요", ids: cheap.map(p => p.id) });
-  const lefty = rps.filter(p => p.th === "L").sort((a, b) => X(b) - X(a)).slice(0, 4);
-  const rest = rps.filter(p => !lefty.includes(p) && !top.slice(0, 2).includes(p)).sort((a, b) => X(b) - X(a)).slice(0, 7 - lefty.length);
+  const lefty = rps.filter(p => p.th === "L").sort((a, b) => X(b) + nb(b) - X(a) - nb(a)).slice(0, 4);
+  const rest = rps.filter(p => !lefty.includes(p) && !top.slice(0, 2).includes(p)).sort((a, b) => X(b) + nb(b) - X(a) - nb(a)).slice(0, 7 - lefty.length);
   if (lefty.length + rest.length === 7) bp.push({ k: "좌완 스페셜", d: "좌완 " + lefty.length + "명 포함 — 좌타 강한 팀을 상대로 유리해요", ids: [...lefty, ...rest].map(p => p.id) });
   const bn = [];
-  const hit = pl.filter(p => !p.isP);
-  const pickBn = (score) => { const used = new Set(); const out = []; for (const slot of BN) { const c = hit.filter(p => eligible(p, slot) && !used.has(p.id)).sort((a, b) => score(b) - score(a))[0]; if (!c) return null; used.add(c.id); out.push(c); } return out; };
+  // 벤치 묶음: 스타는 하위 50%만, 그것도 가끔(10%)만 섞여요
+  const stX = pl.filter(p => !p.isP && p.cls === "스타").map(p => X(p)).sort((a, b) => a - b); const stMed = stX.length ? stX[Math.floor((stX.length - 1) / 2)] : -99;
+  const hit = pl.filter(p => !p.isP && (p.cls !== "스타" || (X(p) <= stMed && hs01(p.id + ":bnstar:" + (RR.bn || 0)) < .1)));
+  const pickBn = (score) => { const used = new Set(); const out = []; for (const slot of BN) { const c = hit.filter(p => eligible(p, slot) && !used.has(p.id)).sort((a, b) => score(b) + nn(b) - score(a) - nn(a))[0]; if (!c) return null; used.add(c.id); out.push(c); } return out; };
   const d1 = pickBn(p => E.z(p.r.def) + X(p) * .4 - price(S, p) * .15); if (d1) bn.push({ k: "수비형", d: "수비가 좋은 백업 4명 — 경기 후반 굳히기용", ids: d1.map(p => p.id) });
   const d2 = pickBn(p => X(p) - (p.pos === "DH" ? 0 : E.z(p.r.def) * .45) - price(S, p) * .12); if (d2) bn.push({ k: "대타형", d: "방망이가 좋은 4명 — 대타·지명 활용", ids: d2.map(p => p.id) });
-  const d3 = pickBn(p => X(p) - price(S, p) * .15); if (d3) bn.push({ k: "만능형", d: "공수 균형 4명 — 주전 휴식 때 무난해요", ids: d3.map(p => p.id) });
+  let d3 = pickBn(p => X(p) - price(S, p) * .15); if (d3 && d2 && d3.map(p => p.id).join() === d2.map(p => p.id).join()) d3 = pickBn(p => X(p) - price(S, p) * .25 + E.z(p.r.def) * .3 + (hs01(p.id + "m") - .5) * .8); if (d3) bn.push({ k: "만능형", d: "공수 균형 4명 — 주전 휴식 때 무난해요", ids: d3.map(p => p.id) });
   for (const x of [...bp, ...bn]) x.price = sum(x.ids.map(id => S.players[id]));
   return { bp, bn };
 }
@@ -3962,7 +4008,7 @@ function finish(S) {
   S.draftMode = true; S.drDone = { budget: D.budget, unlim: !!D.unlim, spent: Math.round(picked.reduce((a, p) => a + p.sal, 0) * 10) / 10 };
   delete S.dr;
 }
-return { minCost, remaining, canForce, TIER_KO, reroll, CORE, RP, BN, ALL, SLOT_KO, RESERVE, basePrice, price, eligible, tierOf, teamInfo, start, refreshAll, pick, unpick, choosePkg, autoAssign, filled, ready, finish, autoFill, rrLeft, rrLocked, potLeft, potLook, POT_LOOKS, REROLL_MAX, room, overPct, overLimit, OVER, spent, remaining, minCost, pool };
+return { pkgLeft, pkgReroll, PKG_RR, minCost, remaining, canForce, TIER_KO, reroll, CORE, RP, BN, ALL, SLOT_KO, RESERVE, basePrice, price, eligible, tierOf, teamInfo, start, refreshAll, pick, unpick, choosePkg, autoAssign, filled, ready, finish, autoFill, rrLeft, rrLocked, potLeft, potLook, POT_LOOKS, REROLL_MAX, room, overPct, overLimit, OVER, spent, remaining, minCost, pool };
 })();
 if (typeof module !== "undefined") module.exports = DRAFT;
 
@@ -3976,8 +4022,9 @@ let S = null, BASE = null;
 const UI = { tab: "home", sub: { meet: "room", tac: "plan", roster: "1", rec: "stand", hand: "R" }, sel: null, modal: null, busy: false, msg: null, recKey: "AVG", recMine: false, calM: null, recPos: "H" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const GAME_VER = "1.6.3"; // 게임 버전 — 업데이트할 때마다 올려요
+const GAME_VER = "1.7"; // 게임 버전 — 업데이트할 때마다 올려요
 const CHANGELOG = [
+  { v: "1.7", d: "2026.11.06", items: ["화면에 움직임이 생겼어요: 능력치 막대가 차오르고(시즌 보너스는 이어서 초록으로), 바뀐 숫자는 반짝, 순위가 바뀌면 줄이 미끄러지며 ▲▼ 표시", "탭이 좌우로 밀리며 바뀌고, 휴대폰은 화면을 옆으로 밀면 옆 탭으로 넘어가요", "창은 휴대폰에선 아래서 올라오고 PC에선 가운데서 열려요 · 버튼은 누르면 살짝 눌려요", "홈 맨 위에 뉴스 줄이 생겼어요 (눌러서 기사 보기)", "중계: 점수 날 때 숫자가 튀고, 이닝 칸이 차오르고, 주자가 나가면 베이스에 불이 켜져요", "드래프트: 뽑으면 카드에 불이 켜지고 칩이 차오른 뒤 다음 자리로 · 뽑은 선수의 '계약 완료'를 꾹 누르면 '계약 취소'로 바뀌고 손을 떼면 취소", "결과 공유 카드: 기본 모드는 난이도(쉬움·보통·어려움)를 함께 보여줘요", "2군 추천 투수는 같은 보직끼리 비교해요", "드래프트: 바꾸기를 누르면 원래 계약이 빨간 '계약 취소'로 깜빡이며 바뀌어요 · 화면을 옆으로 밀면 옆 포지션으로 · 묶음 다른 구성은 이름이 또르륵 굴러 바뀌어요 · 야수 묶음엔 스타가 드물게(스타 하위 50%만)", "드래프트 순서: 야수 9명 → 선발 5명 → 불펜 묶음 → 야수 묶음 · 묶음도 '다른 묶음 보기'로 다른 구성을 볼 수 있어요 (5번)", "첫 화면·드래프트에도 움직임: 제목과 구단 카드가 차례로 등장, 선수를 뽑으면 자리 칸이 톡 튀고 남은 예산이 반짝", "화면 안 작은 메뉴(1군/2군 등)는 누른 쪽으로 밀리고, 접힌 칸은 펼칠 때 내려와요", "원석 보너스가 막 열린 선수는 막대가 반짝, 연승 중엔 배지가 두근, 우승하면 불꽃놀이", "기기에서 '움직임 줄이기'를 켜면 모두 꺼져요"] },
   { v: "1.6.3", d: "2026.11.06", items: ["2군 추천 투수: 선발은 1군 선발과, 불펜·마무리는 1군 불펜과만 비교해서 추천해요"] },
   { v: "1.6.2", d: "2026.11.06", items: ["원석 숨은 시즌 보너스가 개막 때 한꺼번에 열리지 않고, 선수마다 개막·시즌 초·중반·막판 중 언젠가 열려요", "보너스가 열리면 보고와 뉴스로 알려줘요 (열리기 전엔 경기에도 반영 안 돼요)"] },
   { v: "1.6.1", d: "2026.11.06", items: ["첫 화면 선수 데이터 설명을 실제 쓰는 데이터에 맞게 고침 (2024~2026 기록 + 통산 기록, 나이·투타·연봉은 실제 정보)"] },
@@ -4177,7 +4224,7 @@ function lineInfo(el) {
 function fitText(root) {
   if (!root) return;
   for (const el of root.querySelectorAll(FIT_SEL)) {
-    if (el.dataset.fit === "1" || !el.offsetParent) continue;
+    if (el.dataset.fit === "1" || !el.offsetParent || el.closest(".prow .pn")) continue; // 목록 줄은 글씨 크기 통일
     const t = (el.textContent || "").trim(); if (t.length < 4 || t.length > 90) continue;
     if (el.querySelector("p, li, ul, div, table, button, select, input")) continue;
     let li = lineInfo(el); if (!li || li.n !== 2) continue;
@@ -4194,7 +4241,7 @@ function render() {
   const app = $("#app"); setTeamTheme();
   const keep = {}; for (const id of ["#tlGive", "#tlGet", ".lu-plan", ".lu-l"]) { const e = document.querySelector(id); if (e) keep[id] = e.scrollTop; } // 고르면 목록 위치 그대로
   const wy = window.scrollY;
-  try { return render0(app); } finally { fitSoon(); for (const id in keep) { const e = document.querySelector(id); if (e) e.scrollTop = keep[id]; } if (Object.keys(keep).length && window.scrollY !== wy) window.scrollTo(0, wy); }
+  try { return render0(app); } finally { fitSoon(); for (const id in keep) { const e = document.querySelector(id); if (e) e.scrollTop = keep[id]; } MO.after(); if (Object.keys(keep).length && window.scrollY !== wy) window.scrollTo(0, wy); }
 }
 function render0(app) {
   if (UI.shareView) { app.innerHTML = shareLanding(UI.shareView); renderModal(); return; }
@@ -4284,11 +4331,12 @@ function homeView() {
   const lead = st[0]; const gb1 = rk === 1 ? (st[1] ? `2위와 ${(((t.w - st[1].w) + (st[1].l - t.l)) / 2).toFixed(1)}경기` : "") : `1위와 ${(((lead.w - t.w) + (t.l - lead.l)) / 2).toFixed(1)}경기`;
   const rd = (t.rs || 0) - (t.ra || 0); const m = Math.round(t.morale);
   return `<div class="grid2 home">${old}
+    ${tickerBar()}
     ${mid}
     <section class="card hero" style="${tcv(t.id)}">
-      <div class="row-sb end"><div><p class="eyebrow">${esc(t.name)} · 시즌 성적</p><span class="big${t.d ? " has-d" : ""}">${t.w}<small> 승 </small>${t.l}<small> 패</small>${t.d ? ` ${t.d}<small> 무</small>` : ""}</span></div><div class="rk"><span class="big rkn">${rk}<small>위</small></span><small class="muted">${gb1}</small></div></div>
+      <div class="row-sb end"><div><p class="eyebrow">${esc(t.name)} · 시즌 성적</p><span class="big mvn${t.d ? " has-d" : ""}" data-mv="w" data-n="${t.w}">${t.w}<small> 승 </small>${t.l}<small> 패</small>${t.d ? ` ${t.d}<small> 무</small>` : ""}</span></div><div class="rk"><span class="big rkn mvn" data-mv="rk" data-n="${-rk}">${rk}<small>위</small></span><small class="muted">${gb1}</small></div></div>
       <div class="l10" aria-label="최근 10경기">${strip}</div>
-      <div class="mini3"><div><small>흐름</small><b>${t.streak > 1 ? t.streak + "연승" : t.streak < -1 ? -t.streak + "연패" : "-"}</b></div><div><small>득실</small><b class="${rd >= 0 ? "good" : "bad"}">${sgn(rd)}</b></div><div class="${morCls(m)}"><small>팀 사기</small><b class="mtxt">${m} · ${moraleLevel(m)}</b></div></div>
+      <div class="mini3"><div><small>흐름</small><b class="stb" data-st="${t.streak}">${t.streak > 1 ? t.streak + "연승" : t.streak < -1 ? -t.streak + "연패" : "-"}</b></div><div><small>득실</small><b class="mvn ${rd >= 0 ? "good" : "bad"}" data-mv="rd" data-n="${rd}">${sgn(rd)}</b></div><div class="${morCls(m)}"><small>팀 사기</small><b class="mtxt">${m} · ${moraleLevel(m)}</b></div></div>
     </section>
     ${moneyCard()}
     ${rankCard()}
@@ -4332,7 +4380,7 @@ function miniStand(st, rk) {
   const me = U(); let gap = "";
   if (me.w + me.l > 0) { if (rk <= 5 && st[5]) { const o = st[5]; gap = `가을야구 선(5위)까지 여유 <b>${(((me.w - o.w) + (o.l - me.l)) / 2).toFixed(1)}경기</b>`; } else if (st[4]) { const o = st[4]; gap = `가을야구 선(5위)까지 <b>${(((o.w - me.w) + (me.l - o.l)) / 2).toFixed(1)}경기</b>`; } }
   return `<section class="card"><div class="row-sb"><h3>순위</h3><button class="link" data-act="tab" data-v="rec">전체 순위</button></div>
-    <div class="mstand">${ids.map((i, k) => `${k && ids[k] - ids[k - 1] > 1 ? `<div class="ms-gap">⋯</div>` : ""}<div class="ms ${st[i].id === S.user ? "me" : ""} ${i === 4 ? "cut" : ""}"><b>${i + 1}</b>${teamChip(st[i].id)}<span class="nm">${teamKo(st[i].id)}</span><span>${st[i].w}-${st[i].l}${st[i].d ? "-" + st[i].d : ""}</span><small>${st[i].gb ? st[i].gb.toFixed(1) : "-"}</small></div>`).join("")}</div>
+    <div class="mstand" data-rk="ms">${ids.map((i, k) => `${k && ids[k] - ids[k - 1] > 1 ? `<div class="ms-gap">⋯</div>` : ""}<div class="ms ${st[i].id === S.user ? "me" : ""} ${i === 4 ? "cut" : ""}" data-tid="${st[i].id}"><b>${i + 1}</b>${teamChip(st[i].id)}<span class="nm">${teamKo(st[i].id)}</span><span>${st[i].w}-${st[i].l}${st[i].d ? "-" + st[i].d : ""}</span><small>${st[i].gb ? st[i].gb.toFixed(1) : "-"}</small></div>`).join("")}</div>
     ${gap ? `<p class="sm">${gap}</p>` : ""}</section>`;
 }
 function moneyCard() {
@@ -4376,7 +4424,7 @@ function goalProgress() {
 }
 function standTable(st, compact) {
   return `<div class="tbl-wrap"><table class="tbl stand"><thead><tr><th>순위</th><th>팀</th><th>경기</th><th>승</th><th>패</th><th>무</th><th>승률</th><th>차</th>${compact ? "" : "<th>연속</th>"}</tr></thead><tbody>
-  ${st.map((r, i) => `<tr class="${r.id === S.user ? "me" : ""} ${i === 4 ? "cut" : ""}"><td>${i + 1}</td><td>${teamChip(r.id)}</td><td>${r.w + r.l + r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td>${avg3(r.pct)}</td><td>${r.gb ? r.gb.toFixed(1) : "-"}</td>${compact ? "" : `<td>${r.streak > 0 ? r.streak + "승" : r.streak < 0 ? -r.streak + "패" : "-"}</td>`}</tr>`).join("")}
+  ${st.map((r, i) => `<tr class="${r.id === S.user ? "me" : ""} ${i === 4 ? "cut" : ""}" data-tid="${r.id}"><td>${i + 1}</td><td>${teamChip(r.id)}</td><td>${r.w + r.l + r.d}</td><td>${r.w}</td><td>${r.l}</td><td>${r.d}</td><td>${avg3(r.pct)}</td><td>${r.gb ? r.gb.toFixed(1) : "-"}</td>${compact ? "" : `<td>${r.streak > 0 ? r.streak + "승" : r.streak < 0 ? -r.streak + "패" : "-"}</td>`}</tr>`).join("")}
   </tbody></table></div>`;
 }
 function bracketCard() {
@@ -4816,7 +4864,7 @@ function offView() {
 function renderModal() {
   fitSoon();
   let m = $("#modal");
-  if (!UI.modal) { if (m) m.remove(); document.body.classList.remove("noscroll"); return; }
+  if (!UI.modal) { if (m) MO.closeModal(m); document.body.classList.remove("noscroll"); return; }
   if (!m) { m = document.createElement("div"); m.id = "modal"; document.body.appendChild(m); }
   document.body.classList.add("noscroll");
   const md = UI.modal; let inner = "";
@@ -4840,7 +4888,7 @@ function renderModal() {
       <li><b>★ 스타</b> 리그 최상위 30명(구단마다 1~4명). 경기에 나가면 팀 전체 능력치 +1(최상위는 +2), 합쳐서 최대 +${E.BAL.starCap}. 몸값이 가장 비싸요.</li>
       <li><b>● 주전</b> 리그 상위 35% 안의 주전급. 실력만큼 값이 나가요.</li>
       <li><b>○ 실속</b> 그 밖의 선수. 부상 위험 −40%, 컨디션 기복이 절반이라 싸게 쓰기 좋아요.</li>
-      <li><b>◇ 원석</b> 25세 이하 유망주. 시즌 중 성장하고, 개막 때 숨은 보너스가 공개돼요. 몸값 30% 할인. 잠재력은 드래프트에서 3번까지 확인할 수 있어요(버튼의 3/3이 남은 횟수).</li>
+      <li><b>◇ 원석</b> 25세 이하 유망주. 시즌 중 성장하고, 숨은 보너스가 시즌 중 언젠가 열려요. 몸값 30% 할인. 잠재력은 드래프트에서 3번까지 확인할 수 있어요(버튼의 3/3이 남은 횟수).</li>
       <li><b>선발 추천</b> 선발 후보는 같은 분류의 선발투수끼리 순위를 매겨 골라요. 1·2선발은 상위 0~50%, 3선발 20~80%, 4선발 40~100%, 5선발 50~100% 안에서 나와요.</li>
     </ul><p class="xs muted">이름값 때문에 실력보다 비싸거나 싼 선수도 있어요. 예상 성적과 능력치를 비교해 보세요.</p>`;
   else if (md.type === "pressAll") inner = pressAllSheet();
@@ -4849,7 +4897,7 @@ function renderModal() {
   else if (md.type === "shareName") inner = shareNameSheet();
   else if (md.type === "drConf") inner = drConfSheet(md);
   else if (md.type === "confirm") inner = `<h2>${esc(md.title)}</h2><p>${esc(md.text)}</p><div class="btns"><button class="ghost" data-act="close">취소</button><button class="primary" data-act="${md.act}" data-v="${md.v || ""}">${esc(md.ok)}</button></div>`;
-  const ctr = md.type === "verUp" || md.type === "diffPick"; m.innerHTML = `<div class="scrim" data-act="close"></div><div class="sheet${ctr ? " center" : ""}" role="dialog" aria-modal="true">${md.type === "diffPick" ? "" : `<button class="iconb x" data-act="close" aria-label="닫기">${icon("close")}</button>`}${inner}</div>`;
+  const ctr = md.type === "verUp" || md.type === "diffPick"; m.innerHTML = `<div class="scrim" data-act="close"></div><div class="sheet${ctr ? " center" : ""}" role="dialog" aria-modal="true">${md.type === "diffPick" ? "" : `<button class="iconb x" data-act="close" aria-label="닫기">${icon("close")}</button>`}${inner}</div>`; MO.modal(m, md);
 }
 function findAny(id) { return S && (S.players[id] || (S.fpool || []).find(p => p.id === id) || (S.draftPool || []).find(p => p.id === id)); }
 function playerModal(md) {
@@ -5031,7 +5079,7 @@ function startScreen() {
         <dt>우승 확률</dt><dd>${si.win}%</dd>
         <dt>구단주 목표</dt><dd>${esc(si.goal)}</dd>
       </dl>
-      ${SLOGAN[sel] ? `<p class="slogan" style="${tcv(sel)}">${esc(SLOGAN[sel])}</p>` : ""}
+      ${SLOGAN[sel] ? `<p class="slogan" style="${tcv(sel)}"><span>${esc(SLOGAN[sel])}</span></p>` : ""}
       ${!free ? "" : `<div class="budrow">
         <div class="row-sb wrap"><label for="budIn"><b>선수 드래프트 예산</b> <small class="muted">기본 ${si.budget}억 · 80억 이상 얼마든지 정할 수 있어요</small></label></div>
         <div class="budctl"><button class="ghost small" data-act="bud" data-v="-10" aria-label="10억 줄이기">−10</button><input id="budIn" type="number" min="80" step="5" value="${B}" inputmode="numeric" aria-label="예산(억)"><span>억</span><button class="ghost small" data-act="bud" data-v="10" aria-label="10억 늘리기">+10</button></div>
@@ -5083,7 +5131,7 @@ function drBudgetBox() {
   const chemTxt = best ? (best.n >= 4 ? `케미: ${esc(best.t)} 출신 ${best.n}명 · 능력치 +1${best.t === S.user && best.n > 10 ? " (10명 넘어 +2)" : ""}` : `케미: ${esc(best.t)} 출신 ${best.n}명, ${4 - best.n}명 더면 +1`) : "케미: 같은 팀 출신 4명이면 +1";
   UI.drInfo = [`빗금 = 예산 초과 구간이에요. 예산을 넘기면 1%마다 팀 능력치가 −0.2%씩, 최대 −2%까지 떨어져요.`, `지금 더 쓸 수 있는 초과 금액: +${won(Math.max(0, Math.min(lim, lim + rem)))}`, chemTxt + " (같은 팀 출신 4명이면 +1)", `25명 몸값 + 2군 육성비 ${won(DRAFT.RESERVE)}이 예산에서 빠져요.`];
   return `<div class="budbox">
-    <div class="row-sb"><div class="budn">${rem >= 0 ? `<span class="sm muted">남은 예산</span><b>${won(rem)}</b>` : `<span class="sm bad">예산 초과</span><b class="bad">${won(-rem)}</b><span class="xs bad">능력치 −${(Math.min(2, op * .2)).toFixed(1)}%</span>`}<small class="muted">/ ${won(B)}</small></div><button class="iconb sm" data-act="drInfo" aria-label="예산·케미 설명">${icon("info")}</button></div>
+    <div class="row-sb"><div class="budn">${rem >= 0 ? `<span class="sm muted">남은 예산</span><b class="mvn" data-mv="drRem" data-roll="억" data-n="${rem}">${won(rem)}</b>` : `<span class="sm bad">예산 초과</span><b class="bad">${won(-rem)}</b><span class="xs bad">능력치 −${(Math.min(2, op * .2)).toFixed(1)}%</span>`}<small class="muted">/ ${won(B)}</small></div><button class="iconb sm" data-act="drInfo" aria-label="예산·케미 설명">${icon("info")}</button></div>
     <div class="budbar"><b class="${rem < 0 ? "over" : ""}" style="width:${fill.toFixed(1)}%"></b><i style="left:${cut.toFixed(1)}%"></i></div></div>`;
 }
 function drChem() {
@@ -5115,7 +5163,7 @@ function draftView() {
     </header>
     <div class="drmain">${G.view !== "roster" ? `<div class="drwide"><div class="drleft">${main}</div><aside class="drside">${drRosterList()}</aside></div>` : main}</div>
     <div class="drbar"><span class="sm">${done ? `25명 완성 · ${won(DRAFT.spent(S) + DRAFT.RESERVE)} 사용` : `남은 자리 <b>${25 - f.all}</b>${D.active && !D.picks[D.active] ? ` · 다음 <b>${DRAFT.SLOT_KO[D.active]}</b>` : ""}`}</span>
-      ${done ? `<button class="primary" data-act="drFinish" ${DRAFT.ready(S) ? "" : "disabled"}>${icon("play")}완성하고 개막</button>` : G.view === "pick" && !G.pk && D.active ? (DRAFT.rrLocked(S, D.active) ? `<button class="ghost" disabled title="빼기를 누르면 다시 볼 수 있어요">뽑기 완료 · 빼기 후 다른 후보</button>` : `<button class="ghost" data-act="drReroll" data-v="${D.active}" ${DRAFT.rrLeft(S, D.active) <= 0 ? "disabled" : ""}>다른 후보 보기 · ${D.active.startsWith("RP") ? "불펜 " : ""}${DRAFT.rrLeft(S, D.active)}번</button>`) : `<button class="ghost" data-act="drAutoFill">빈자리 자동 채우기</button>`}</div>
+      ${done ? `<button class="primary" data-act="drFinish" ${DRAFT.ready(S) ? "" : "disabled"}>${icon("play")}완성하고 개막</button>` : G.view === "pick" && !G.pk && D.active ? (DRAFT.rrLocked(S, D.active) ? `<button class="ghost" disabled title="빼기를 누르면 다시 볼 수 있어요">뽑기 완료 · 빼기 후 다른 후보</button>` : `<button class="ghost" data-act="drReroll" data-v="${D.active}" ${DRAFT.rrLeft(S, D.active) <= 0 ? "disabled" : ""}>다른 후보 보기 · ${D.active.startsWith("RP") ? "불펜 " : ""}${DRAFT.rrLeft(S, D.active)}번</button>`) : G.view === "pick" && G.pk ? `<button class="ghost" data-act="drPkgRoll" data-v="${G.pk}" ${DRAFT.pkgLeft(S, G.pk) <= 0 ? "disabled" : ""}>다른 묶음 보기 · ${DRAFT.pkgLeft(S, G.pk)}번</button>` : `<button class="ghost" data-act="drAutoFill">빈자리 자동 채우기</button>`}</div>
   </div>`;
 }
 function seg2(tabs, cur, actName, dots) { return `<div class="seg" role="tablist">${tabs.map(([k, l]) => `<button role="tab" class="${cur === k ? "on" : ""}" data-act="${actName}" data-v="${k}">${l}${dots && dots[k] ? `<i class="cdot" title="이달 바뀜"></i>` : ""}</button>`).join("")}</div>`; }
@@ -5154,17 +5202,17 @@ function candCard(p, tier, slot, cur, open, own, mine) {
   const pen = !p.isP && !slot.startsWith("BN") && slot !== "DH" ? E.eligibleAt(p, slot) : 0;
   const posNote = !p.isP && p.pos !== slot && !slot.startsWith("BN") && slot !== "DH" ? `${posKo(p)} 출신${pen ? ` · 이 자리 수비 −${pen}` : " · 이 자리도 많이 봤어요"}` : "";
   const info = `${teamChip(p.orig)} ${handKo(p)} · ${p.age}세${p.age >= 35 && E.isEstablished(p) ? " · 베테랑" : ""}`;
-  if (!open) return `<article class="cand c-${k} shut ${mine ? "mine" : ""}"><button class="candtop" data-act="drOpen" data-v="${p.id}" aria-expanded="false"><span class="cn">${chip}<b>${esc(p.n)}</b><small class="muted">${p.orig} · ${xboxes(p).map(([l, v]) => `<span class="nw">${l.replace("예상 ", "")} ${v}</span>`).join(" · ")}</small></span><span class="cp">${won(pr).replace("억", "")}<small>억</small></span></button>${selBtn ? `<div class="btns cbtns">${selBtn}</div>` : ""}</article>`;
+  if (!open) return `<article class="cand c-${k} shut ${mine ? "mine" : ""}" data-pid="${p.id}"><button class="candtop" data-act="drOpen" data-v="${p.id}" aria-expanded="false"><span class="cn">${chip}<b>${esc(p.n)}</b><small class="muted">${p.orig} · ${xboxes(p).map(([l, v]) => `<span class="nw">${l.replace("예상 ", "")} ${v}</span>`).join(" · ")}</small></span><span class="cp">${won(pr).replace("억", "")}<small>억</small></span></button>${selBtn ? `<div class="btns cbtns">${selBtn}</div>` : ""}</article>`;
   const bars = KEY4(p).map(([kk, l]) => statBar(l, RV(p.r[kk]))).join("");
   const seen = S.dr.potSeen && S.dr.potSeen[p.id]; const pl = DRAFT.potLeft(S);
   const potLine = p.cls === "원석" && p.pot ? `<div class="potrow"><span class="xs">잠재력 ${seen ? `<b>${p.pot.tr}</b> <span class="muted">(예상 ${p.pot.lo}~${p.pot.hi})</span>` : `예상 ${p.pot.lo}~${p.pot.hi}`}</span>${seen ? `<span class="potcnt">잠재력 확인 · ${pl}/${DRAFT.POT_LOOKS}</span>` : `<button class="ghost small" data-act="drPot" data-v="${p.id}" ${pl > 0 ? "" : "disabled"}>잠재력 확인 · ${pl}/${DRAFT.POT_LOOKS}</button>`}</div>` : "";
   const gem = (potLine) + (p.cls === "원석" && p.gb != null && !p.gbShown ? `<p class="xs gemnote">숨은 시즌 보너스 ? — 개막~시즌 막판 사이에 열려요 (몸값은 평균 +6 기준)</p>` : "");
-  return `<article class="cand c-${k} ${mine ? "mine" : ""}">${mine ? `<span class="mine-tag">지금 이 자리 선수</span>` : ""}
+  return `<article class="cand c-${k} ${mine ? "mine" : ""}" data-pid="${p.id}">${mine ? `<span class="mine-tag">지금 이 자리 선수</span>` : ""}
     <button class="candtop" data-act="drOpen" data-v="${p.id}" aria-expanded="true"><span class="cn">${chip}<b>${esc(p.n)}</b><small class="muted">${info}</small></span><span class="cp"><span class="cpn">${won(pr).replace("억", "")}<small>억</small></span><em>${priceFormula(p)}</em></span></button>
     <div class="xbox">${xboxes(p).map(([l, v]) => `<div><small>${l}</small><b>${v}</b></div>`).join("")}</div>
     <div class="rts mini">${bars}</div>
     ${posNote ? `<p class="xs muted">${posNote}</p>` : ""}${gem}
-    <div class="btns cbtns"><button class="ghost cbtn" data-act="player" data-v="${p.id}">자세히</button>${G.cmp ? selBtn : mine ? `<button class="ghost cbtn out" data-act="drOut" data-v="${slot}">빼기</button>` : `<button class="primary cbtn" data-act="drPick" data-s="${slot}" data-v="${p.id}" ${ok ? "" : "disabled"}>${ok ? (cur ? "바꾸기" : "뽑기") : "예산 한도를 넘어요"}</button>`}</div>
+    <div class="btns cbtns"><button class="ghost cbtn" data-act="player" data-v="${p.id}">자세히</button>${G.cmp ? selBtn : mine ? `<button class="cbtn signed" data-hold="drOut" data-v="${slot}" title="꾹 누르면 계약 취소">계약 완료</button>` : `<button class="primary cbtn" data-act="drPick" data-s="${slot}" data-v="${p.id}" ${ok ? "" : "disabled"}>${ok ? (cur ? "바꾸기" : "뽑기") : "예산 한도를 넘어요"}</button>`}</div>
   </article>`;
 }
 function compareBox(ps) {
@@ -5345,6 +5393,10 @@ function prDaily(di, g) {
   if (ld) S.prLeader = ld;
 }
 function prTagHtml(a) { return a.lg ? `<span class="nwtag lg">리그 화제</span>${teamChip(a.lg)}` : `<span class="nwtag">${esc(a.tag)}</span>`; }
+function tickerBar() {
+  const L = (S.press || []); if (!L.length || !(S.phase === "season" || S.phase === "post" || S.phase === "postdone")) return "";
+  return `<section class="tkbar span2" aria-label="뉴스"><span class="tklab">뉴스</span><div class="tkbox" aria-live="off"><button class="tkit" data-act="article" data-v="${L[0].id}">${esc(L[0].title)}</button></div></section>`;
+}
 function pressCard() {
   const L = (S.press || []); if (!L.length || !(S.phase === "season" || S.phase === "post" || S.phase === "postdone")) return "";
   const a = L[0], rest = L.slice(1, 5);
@@ -5497,7 +5549,7 @@ function liveRender() {
   const heads = G.filter(x => x.big).slice(-3).reverse();
   const dr = L.rank0 - rk;
   const modeSeg = `<div class="segopt mini">${[["all", "전체 중계"], ["hl", "주요 장면"], ["res", "결과만"]].map(([k, l]) => `<button class="${relayMode() === k ? "on" : ""}" data-act="relayMode" data-v="${k}">${l}</button>`).join("")}</div>`;
-  const pct = L.total ? Math.min(100, G.length / L.total * 100) : 0;
+  const pct = L.total ? Math.min(100, (G.length + (playing && L.play.lines.length ? Math.max(0, L.play.k) / L.play.lines.length : 0)) / L.total * 100) : 0;
   const others = !playing && g && g.others ? g.others : [];
   const st = E.standings(S); const rkOf2 = id => st.findIndex(r => r.id === id) + 1;
   const pm = el.querySelector(".live-main"), keepTop = pm ? pm.scrollTop : 0, gkey = (L.play && L.play.gid) || ("n" + L.games.length);
@@ -5513,7 +5565,7 @@ function liveRender() {
     </main>
     <div class="live-ctl">${L.done ? `<button class="primary ${L.monthMsg ? "endr" : "grow"}" data-act="liveClose">${L.monthMsg ? "월말 리포트 보기" : "확인"}</button>` : `<div class="ctlrow">${modeSeg}<div class="segopt mini">${[1, 2, 4].map(s => `<button class="${L.speed === s ? "on" : ""}" data-act="liveSpeed" data-v="${s}">${s}x</button>`).join("")}</div></div><div class="ctlrow"><button class="iconb" data-act="livePause" ${L.alert ? "disabled" : ""} aria-label="${L.paused ? "계속" : "일시정지"}">${L.paused ? icon("play") : icon("pause")}</button>${playing ? `<button class="ghost grow" data-act="relayEnd">이 경기 끝까지</button>` : ""}<button class="primary grow" data-act="liveSkip" ${L.alert ? "disabled" : ""}>결과까지 건너뛰기</button></div>`}</div>
   </div>`;
-  { const nm = el.querySelector(".live-main"); if (nm && UI.liveKey === gkey) nm.scrollTop = keepTop; UI.liveKey = gkey; } // 다음 경기가 시작될 때만 위로
+  { const nm = el.querySelector(".live-main"); if (nm && UI.liveKey === gkey) nm.scrollTop = keepTop; UI.liveKey = gkey; } MO.live(el, L); // 다음 경기가 시작될 때만 위로
 }
 
 /* ---------- 문자중계 ---------- */
@@ -5598,6 +5650,7 @@ function relayBoard(L) {
       <div class="row-sb xs muted"><span>${[dateKo(L.games[L.games.length - 1].date), esc(T(b.h.t).park)].filter(Boolean).join(" · ")}</span><span class="livetag">${ln.end ? "경기 종료" : `${ln.i}회${ln.top ? "초" : "말"} · ${ln.o >= 3 ? "3아웃" : ln.o + "아웃"}`}</span></div>
       <div class="sboard"><div class="sb-t">${teamSq(b.a.t, "lg")}<small>원정</small></div><div class="sb-s"><b>${ln.s[0]}</b><i>:</i><b>${ln.s[1]}</b></div><div class="sb-t">${teamSq(b.h.t, "lg")}<small>홈</small></div></div>
       <div class="lgrid" style="--n:${n}"><span></span>${Array.from({ length: n }, (_, i) => `<span class="muted ${i + 1 === ln.i && !ln.end ? "cur" : ""}">${i + 1}</span>`).join("")}<b class="muted">R</b><span class="muted">H</span>${row(0, b.a.t)}${row(1, b.h.t)}</div>
+      <div class="innbar" aria-label="이닝 진행">${Array.from({ length: 9 }, (_, i) => `<i class="${ln.end || i + 1 < ln.i ? "f" : i + 1 === ln.i ? (ln.top ? "h" : "f2") : ""}"></i>`).join("")}</div>
       <div class="sit"><div class="diaw">${diamond(ln.bs, Math.min(3, ln.o))}</div><div class="vsline">${ln.b ? `<p class="sm"><small class="muted">타자</small> <b>${nm(ln.b)}</b>${relayToday(Pl, ln.b)}</p>` : ""}${ln.p ? `<p class="sm"><small class="muted">투수</small> <b>${nm(ln.p)}</b></p>` : ""}</div></div>
     </section>
     <section class="lcard relay"><div class="row-sb"><p class="eyebrow">문자중계</p><span class="xs muted">${relayMode() === "all" ? "전체 중계" : "주요 장면만"}</span></div>
@@ -5987,11 +6040,16 @@ function act2(a, el) {
     case "drCmp": { const G = dg(); G.cmp = !G.cmp; G.sel = []; render(); break; }
     case "drSel": { const G = dg(); const i = G.sel.indexOf(v); if (i >= 0) G.sel.splice(i, 1); else { if (G.sel.length >= 2) G.sel.shift(); G.sel.push(v); } render(); break; }
     case "drOpen": { const G = dg(); if (G.all || drWide()) { G.closed = G.closed || {}; G.closed[v] = !G.closed[v]; } else { const D = S.dr; const i = (D.cands[D.active] || []).findIndex(c => c.pid === v); G.open[v] = !candOpen(v, i); } render(); break; }
-    case "drPick": { const err = DRAFT.pick(S, el.dataset.s, v); if (err) flash(err); else { const p = P(v); flash(`${p.n} 영입 · ${won(DRAFT.price(S, p))}`); const G = dg(); G.sel = []; const D = S.dr; if (!D.active) { G.view = "roster"; } else { G.grp = D.active.startsWith("SP") || D.active.startsWith("RP") ? "P" : "H"; const from = el.dataset.s || "", to = D.active; const grpOf = x => x.startsWith("RP") ? "bp" : x.startsWith("BN") ? "bn" : null; if (grpOf(to) && grpOf(from) !== grpOf(to)) G.pk = grpOf(to); } } scheduleSave(); render(); window.scrollTo(0, 0); break; }
+    case "drPick": { const err = DRAFT.pick(S, el.dataset.s, v); if (err) flash(err); else { const p = P(v); flash(`${p.n} 영입 · ${won(DRAFT.price(S, p))}`); const G = dg(); G.sel = []; const D = S.dr; if (!D.active) { const need = k => (k === "bp" ? DRAFT.RP : DRAFT.BN).some(x => !D.picks[x]); if (need("bp")) { G.view = "pick"; G.pk = "bp"; G.grp = "P"; } else if (need("bn")) { G.view = "pick"; G.pk = "bn"; G.grp = "H"; } else G.view = "roster"; } else { G.grp = D.active.startsWith("SP") || D.active.startsWith("RP") ? "P" : "H"; const from = el.dataset.s || "", to = D.active; const grpOf = x => x.startsWith("RP") ? "bp" : x.startsWith("BN") ? "bn" : null; if (grpOf(to) && grpOf(from) !== grpOf(to)) G.pk = grpOf(to); } } scheduleSave(); render(); window.scrollTo(0, 0); break; }
     case "drOut": { DRAFT.unpick(S, v); const G = dg(); G.view = "pick"; G.pk = null; flash("빼서 빈자리로 뒀어요"); scheduleSave(); render(); break; }
     case "drUnpick": DRAFT.unpick(S, v); if (S.dr.mode === "free") S.dr.mode = "rec"; dg().view = "roster"; scheduleSave(); render(); break;
     case "drReroll": { const changed = DRAFT.reroll(S, v); { const G = dg(); G.open = {}; G.closed = {}; } if (changed === "locked") flash("이 자리는 이미 뽑았어요. 빼기를 누르면 다른 후보를 볼 수 있어요"); else if (changed === "limit") flash(v.startsWith("RP") ? "불펜은 다른 후보 보기를 모두 10번 다 썼어요" : "이 자리는 다른 후보 보기를 10번 다 썼어요"); else if (!changed) flash("더 보여줄 후보가 없어요"); else { const nc = (S.dr.cands[v] || [])[0]; if (nc && nc.noStar) flash("이 자리엔 남은 스타가 없어 가장 좋은 주전을 보여줘요"); } scheduleSave(); render(); break; }
-    case "drPkg": { const err = DRAFT.choosePkg(S, el.dataset.k, +v); if (err) flash(err); else flash("묶음을 샀어요"); scheduleSave(); render(); break; }
+    case "drPkg": { const k = el.dataset.k; const err = DRAFT.choosePkg(S, k, +v); if (err) flash(err); else { flash("묶음을 샀어요"); const D = S.dr, G = dg(); const empty = DRAFT.ALL.find(x => !D.picks[x]);
+        if (k === "bp" && DRAFT.BN.some(x => !D.picks[x])) { G.pk = "bn"; G.grp = "H"; } // 불펜 묶음 다음은 야수 묶음
+        else if (empty && DRAFT.CORE.includes(empty)) { G.pk = null; D.active = empty; G.grp = empty.startsWith("SP") ? "P" : "H"; }
+        else if (!empty) { G.pk = null; G.view = "roster"; } window.scrollTo(0, 0); }
+      scheduleSave(); render(); break; }
+    case "drPkgRoll": { const err = DRAFT.pkgReroll(S, v); if (err) flash("다른 구성은 더 볼 수 없어요"); scheduleSave(); render(); break; }
     case "drPkgClear": { const D = S.dr; const slots = v === "bp" ? DRAFT.RP : DRAFT.BN; slots.forEach(s => delete D.picks[s]); D.pkg[v] = null; DRAFT.refreshAll(S); scheduleSave(); render(); break; }
     case "modeSet": if (window.KBO_BASIC_ONLY) break; UI.mode = v; if (v === "basic") { UI.budget = null; UI.unlim = false; } render(); break;
     case "seasonEnd": S.phase = "end"; S.final = computeFinal(); UI.tab = "home"; saveNow(); render(); window.scrollTo(0, 0); break;
@@ -6134,13 +6192,14 @@ function champOverlay() {
   const show = S && S.phase === "postdone" && S.post && S.post.champ === S.user && !S.champSeen && !UI.busy && !UI.live;
   if (!show) { if (el) el.remove(); return; }
   const k = ksInfo(); if (!k) return;
-  if (!el) { el = document.createElement("div"); el.id = "champov"; document.body.appendChild(el); }
+  let fresh = false; if (!el) { el = document.createElement("div"); el.id = "champov"; document.body.appendChild(el); fresh = true; }
   el.style.setProperty("--chm", champBg(S.user));
   el.innerHTML = `<div class="cov" role="dialog" aria-modal="true" aria-label="한국시리즈 우승"><div class="cov-glow"></div>
     <div class="cov-top"><span>KOREAN SERIES</span><span>${S.year}</span></div>
     <div class="cov-mid">${STAR_SVG("none", 30).replace('fill="none"', 'fill="none" stroke="#D8B84A" stroke-width="1.4" stroke-linejoin="round"')}<span class="cov-ey">CHAMPIONS</span><span class="cov-tm">${esc(U().name)}</span><i class="cov-rule"></i><span class="cov-ch">${S.year} 한국시리즈 우승</span></div>
     <div class="cov-sc"><div><small>시리즈</small><b>${k.w}–${k.l}</b></div><div><small>${k.last.n}차전</small><b>${k.last.my} : ${k.last.op}</b></div><div><small>상대</small><b class="cov-op">${esc(k.opp)}</b></div></div>
     <div class="cov-bot"><span class="cov-last">${esc(k.last.park)}에서 ${esc(T(k.opp).name)}${jo(T(k.opp).name, "을", "를").slice(T(k.opp).name.length)} 꺾고 ${S.year}년 정상에 섰어요.${k.mvp ? ` 시리즈 MVP는 ${esc(k.mvp.p.n)}.` : ""}</span><button class="cov-btn" data-act="champClose">우승 기록 보기</button></div></div>`;
+  if (fresh) setTimeout(() => MO.champ(el.querySelector(".cov") || el), 300);
 }
 function seasonRecSheet() {
   const tab = UI.srTab || "R"; const t = U(); const F = computeFinal(); const champ = S.post && S.post.champ === S.user;
@@ -6392,7 +6451,7 @@ function shareData() {
   const bh = mine.filter(p => !p.isP).sort((a, b) => seasonVal(b) - seasonVal(a))[0], bp = mine.filter(p => p.isP).sort((a, b) => seasonVal(b) - seasonVal(a))[0];
   const mv = p => p ? [p.n, p.isP ? `ERA ${era(p.st)} · ${p.st.W}승` : `타율 ${avg3(p.st.AB ? p.st.H / p.st.AB : 0)} · ${p.st.HR}홈런`, Math.round(seasonVal(p) * 10) / 10] : null;
   return { v: 1, y: F.year, t: S.user, w: F.w, l: F.l, d: F.d, rk: F.rank, post: F.post, champ: F.champ === S.user, gs: g.total, gr: g.grade, goal: F.goal, ok: F.goalOk,
-    ul: S.drDone && S.drDone.unlim ? 1 : 0, tm: [avg3(F.team.avg), avg3(F.team.ops), F.team.era.toFixed(2), F.rs, F.ra], ti: titles, gg, mh: mv(bh), mp: mv(bp), dt: new Date().toISOString().slice(0, 10),
+    ul: S.drDone && S.drDone.unlim ? 1 : 0, df: S.mode === "basic" ? (S.diffLv == null ? 1 : S.diffLv) : undefined, tm: [avg3(F.team.avg), avg3(F.team.ops), F.team.era.toFixed(2), F.rs, F.ra], ti: titles, gg, mh: mv(bh), mp: mv(bp), dt: new Date().toISOString().slice(0, 10),
     rh: (() => { const h = S.rankHist || []; const st = Math.max(1, Math.ceil(h.length / 36)); const o = h.filter((_, i) => i % st === 0); if (h.length && (h.length - 1) % st) o.push(h[h.length - 1]); return o; })(),
     nm: (S.shareNm || "").slice(0, 10), cs: F.champ === S.user ? Math.max(1, champCount()) : 0, ...shareLineup() };
 }
@@ -6425,7 +6484,7 @@ function shareCard(d) {
     <span class="rc-k">${CH ? `${champStars(Math.max(1, d.cs || 1), 12)} CHAMPIONS` : `${d.y} SEASON`}</span>
     <span class="rc-t">${esc(teamFull(d.t))}</span>
     <div class="rc-rule"></div>
-    <span class="rc-sub">${esc(d.post)}${d.ul ? " · 무제한 예산" : ""}</span>
+    <span class="rc-sub">${esc(d.post)}${d.ul ? " · 무제한 예산" : ""}${d.df != null && !d.ul ? ` · 난이도 ${DIFF_KO[d.df] || ""}` : ""}</span>
     ${d.nm ? `<span class="rc-gm">단장 <b>${esc(d.nm)}</b></span>` : ""}
     <div class="rc-g3"><div><small>정규시즌</small><b>${d.rk}위</b></div><div><small>승-패${d.d ? "-무" : ""}</small><b>${d.w}-${d.l}${d.d ? "-" + d.d : ""}</b></div><div><small>단장 점수</small><b>${esc(d.gr)} ${d.gs}</b></div></div>
     ${tl.length ? `<div class="rc-ttl">${tl.map(x => `<div><span>${esc(x[0])}</span><b>${esc(x[1])} <small>${esc(x[2])}</small></b></div>`).join("")}</div>` : ""}
@@ -6438,7 +6497,7 @@ function shareCard(d) {
 }
 const SHARE_HOST = "poodoo-ait.github.io/danjang-season";
 function shareText(d, link) {
-  const L = [`⚾ 단장의 시즌 ${d.y} 시즌 결과${d.ul ? " (무제한 예산)" : ""}`, `${teamFull(d.t)} · ${d.w}승 ${d.l}패${d.d ? ` ${d.d}무` : ""} · ${d.rk}위`, `가을야구: ${d.post}`, `단장 점수 ${d.gs}점 (${d.gr}) · 구단주 목표 ${d.ok ? "달성" : "미달"}`];
+  const L = [`⚾ 단장의 시즌 ${d.y} 시즌 결과${d.ul ? " (무제한 예산)" : d.df != null ? ` (난이도 ${DIFF_KO[d.df] || ""})` : ""}`, `${teamFull(d.t)} · ${d.w}승 ${d.l}패${d.d ? ` ${d.d}무` : ""} · ${d.rk}위`, `가을야구: ${d.post}`, `단장 점수 ${d.gs}점 (${d.gr}) · 구단주 목표 ${d.ok ? "달성" : "미달"}`];
   if (d.ti && d.ti.length) L.push(`🏆 타이틀: ${d.ti.map(x => `${x[0]} ${x[1]}`).join(", ")}`);
   if (d.gg && d.gg.length) L.push(`🧤 골든글러브: ${d.gg.map(x => `${x[1]}(${x[0]})`).join(", ")}`);
   if (d.mh || d.mp) L.push(`⭐ 올해의 선수: ${[d.mh && d.mh[0], d.mp && d.mp[0]].filter(Boolean).join(" · ")}`);
@@ -6484,7 +6543,7 @@ async function shareImage(d) {
     else T(`${d.y} SEASON`, L, y, `700 28px ${BODY}`, TC);
     y += 110; T(teamFull(d.t), L, y, `400 100px ${DISP}`, INK);
     y += 36; if (!measure) { x.fillStyle = TC; x.fillRect(L, y, 80, 7); }
-    y += 60; T(d.post + (d.ul ? " · 무제한 예산" : ""), L, y, `400 34px ${BODY}`, SUB);
+    y += 60; T(d.post + (d.ul ? " · 무제한 예산" : d.df != null ? ` · 난이도 ${DIFF_KO[d.df] || ""}` : ""), L, y, `400 34px ${BODY}`, SUB);
     if (d.nm) { y += 54; T("단장", L, y, `400 30px ${BODY}`, MU); T(d.nm, L + 78, y, `700 30px ${BODY}`, INK); }
     y += 40; HL(y);
     const cols = [["정규시즌", `${d.rk}위`], [d.d ? "승-패-무" : "승-패", `${d.w}-${d.l}${d.d ? "-" + d.d : ""}`], ["단장 점수", `${d.gr} ${d.gs}`]]; const cw = (R - L) / 3;
@@ -6695,6 +6754,470 @@ function diffPickSheet() {
     <p class="xs muted">시작하면 바꿀 수 없어요.</p>
     <div class="btns"><button class="ghost" data-act="close">취소</button><button class="primary teambtn" style="${tm ? tcv(tm) : ""}" data-act="diffGo">${UI.diffNext === "newGame" ? "이 난이도로 시작" : "이 난이도로 선수 드래프트"}</button></div>`;
 }
+/* ---------- 모션 (ver 1.7) — 그린 뒤에 덧씌우는 움직임. '움직임 줄이기' 켜면 전부 꺼져요 ---------- */
+var MO = (function () {
+  const RM = () => { try { return matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } };
+  const EZ = { expo: "cubic-bezier(.16,1,.3,1)", out: "cubic-bezier(.2,.7,.3,1)", back: "cubic-bezier(.34,1.56,.64,1)", io: "cubic-bezier(.65,0,.35,1)", lin: "linear" };
+  const an = (el, kf, o) => { o = o || {}; if (!el || !el.animate) return null; try { return el.animate(kf, { duration: o.d || 300, delay: o.dl || 0, easing: EZ[o.e || "out"] || o.e, fill: o.f || "none", iterations: o.it || 1 }); } catch (e) { return null; } };
+  const expoF = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+  const isPC = () => window.innerWidth >= 760;
+  const pv = { tab: null, nums: {}, ranks: {}, streak: null, mkey: null, live: null, tick: 0 };
+
+  /* 1-D 막대: 기본 → 보너스가 한 줄로 이어서 차오름 + 숫자 같이 올라감 */
+  function count(el, to, ms, dl) {
+    const tn = [...el.childNodes].find(n => n.nodeType === 3 && /\d/.test(n.nodeValue)); if (!tn) return;
+    const dec = /\./.test(tn.nodeValue); const t0 = performance.now() + (dl || 0);
+    tn.nodeValue = dec ? (0).toFixed(1) : "0";
+    const step = t => { const x = Math.max(0, Math.min(1, (t - t0) / ms)); const v = to * expoF(x); tn.nodeValue = dec ? v.toFixed(1) : String(Math.round(v)); if (x < 1 && tn.isConnected) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  // 기본 막대 0.8초 → 0.35초 쉬고 → 보너스 0.55초
+  const TB = 800, TP = 350, TG = 550;
+  function count2(el, a, b, ms, dl) {
+    const tn = [...el.childNodes].find(n => n.nodeType === 3 && /\d/.test(n.nodeValue)); if (!tn) return;
+    const t0 = performance.now() + (dl || 0);
+    const step = t => { const x = Math.max(0, Math.min(1, (t - t0) / ms)); tn.nodeValue = String(Math.round(a + (b - a) * expoF(x))); if (x < 1 && tn.isConnected) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+  function growRow(r, k) {
+    const bs = [...r.querySelectorAll(".rb b")]; const dl = Math.min(k, 12) * 35;
+    const base = bs[0], gem = bs[1]; if (!base) return;
+    an(base, [{ width: "0%" }, { width: base.style.width }], { d: TB, dl, e: "expo", f: "backwards" });
+    const rv = r.querySelector(".rv"); const fin = rv ? parseFloat(rv.textContent) : NaN;
+    if (gem) {
+      const lo = parseFloat(base.style.width) || 0, d = parseFloat(gem.style.width) || 0, up = gem.classList.contains("gbp"), v0 = up ? lo : lo + d;
+      if (up) an(gem, [{ width: "0%" }, { width: gem.style.width }], { d: TG, dl: dl + TB + TP, e: "out", f: "backwards" });
+      else { // 마이너스: 원래 능력치까지 찼다가 → 쉬고 → 깎인 만큼 줄어들며 빨간 칸이 드러남
+        const T = TB + TP + TG, a1 = TB / T, a2 = (TB + TP) / T;
+        base.getAnimations().forEach(x => x.cancel());
+        an(base, [{ width: "0%", offset: 0, easing: EZ.expo }, { width: v0 + "%", offset: a1 }, { width: v0 + "%", offset: a2, easing: EZ.out }, { width: lo + "%", offset: 1 }], { d: T, dl, e: "lin", f: "backwards" });
+        an(gem, [{ width: "0%", offset: 0 }, { width: "0%", offset: a2, easing: EZ.out }, { width: gem.style.width, offset: 1 }], { d: T, dl, e: "lin", f: "backwards" });
+      }
+      if (rv && !isNaN(fin)) { const tn = [...rv.childNodes].find(n => n.nodeType === 3); if (tn) tn.nodeValue = "0"; count2(rv, 0, Math.round(v0), TB, dl); count2(rv, Math.round(v0), fin, TG, dl + TB + TP); }
+      const sm = rv && rv.querySelector("small"); if (sm) { sm.style.display = "inline-block"; an(sm, [{ opacity: 0, transform: "scale(.5)" }, { opacity: 1, transform: "none" }], { d: 320, dl: dl + TB + TP, e: "back", f: "backwards" }); }
+    } else if (rv && !isNaN(fin)) count(rv, fin, TB, dl);
+  }
+  // 화면에 실제로 보일 때 시작 (아래쪽 카드는 내려서 보일 때)
+  let io = null; const pend = new Map();
+  function whenSeen(el, fn) {
+    if (!("IntersectionObserver" in window)) { fn(); return; }
+    if (!io) io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { const fs = pend.get(e.target) || []; io.unobserve(e.target); pend.delete(e.target); if (e.target.isConnected) fs.forEach(f => f()); } }), { threshold: .35 });
+    if (pend.has(el)) pend.get(el).push(fn); else { pend.set(el, [fn]); io.observe(el); }
+  }
+  function clearSeen() { if (io) { pend.forEach((f, el) => io.unobserve(el)); pend.clear(); } }
+  function growBars(root, max) {
+    const rows = [...root.querySelectorAll(".rt")].filter(r => r.querySelector(".rb b")).slice(0, max || 14);
+    // 같은 카드 안 막대는 함께, 카드가 보일 때
+    const groups = new Map(); rows.forEach(r => { const g = r.closest(".rts, .card, .sheet section") || r.parentElement; if (!groups.has(g)) groups.set(g, []); groups.get(g).push(r); });
+    groups.forEach((rs, g) => { rs.forEach(r => r.querySelectorAll(".rb b").forEach(b => b.style.visibility = "hidden")); whenSeen(g, () => rs.forEach((r, k) => { r.querySelectorAll(".rb b").forEach(b => b.style.visibility = ""); growRow(r, k); })); });
+    [...root.querySelectorAll(".gauge b, .rb2 b")].slice(0, 6).forEach(b => { if (!b.style.width) return; b.style.visibility = "hidden"; whenSeen(b.parentElement, () => { b.style.visibility = ""; an(b, [{ width: "0%" }, { width: b.style.width }], { d: 900, e: "expo", f: "backwards" }); }); });
+  }
+
+  /* 8-A 원석 보너스가 막 열린 선수: 초록 막대 반짝 + 숫자 튀어나옴 */
+  function gemGlow(sheet, p) {
+    const g = sheet.querySelector(".rb.gbb"); if (!g) return;
+    whenSeen(g.closest(".rts, section") || g, () => sheet.querySelectorAll(".rb.gbb b.gbp, .rb.gbb b.gbm").forEach(b => an(b, [{ boxShadow: "0 0 0 rgba(43,163,156,0)" }, { boxShadow: "0 0 12px rgba(43,163,156,.8)" }, { boxShadow: "0 0 0 rgba(43,163,156,0)" }], { d: 1100, dl: TB + TP + TG, it: 2 })));
+    p.gbSeen = true;
+  }
+
+  /* 4-D 창: 폰은 아래서, PC·작은 확인 창은 가운데서 */
+  function modal(m, md) {
+    const key = md.type + ":" + (md.id || md.v || md.pid || "");
+    const fresh = !pv.mkey; const changed = pv.mkey !== key; pv.mkey = key;
+    if (!changed || RM()) return;
+    const sh = m.querySelector(".sheet"), sc = m.querySelector(".scrim"); if (!sh) return;
+    if (fresh) {
+      an(sc, [{ opacity: 0 }, { opacity: 1 }], { d: 220 });
+      if (isPC() || sh.classList.contains("center")) an(sh, [{ opacity: 0, transform: "scale(.94)" }, { opacity: 1, transform: "none" }], { d: 200 });
+      else an(sh, [{ transform: "translateY(100%)" }, { transform: "none" }], { d: 300, e: "expo" });
+    } else an(sh, [{ opacity: .4 }, { opacity: 1 }], { d: 160 });
+    growBars(sh, 14);
+    if (md.type === "player") { const p = P(md.id); if (p && p.gb != null && p.gbShown && !p.gbSeen && p.gbDay != null && S && S.day - p.gbDay <= 10) gemGlow(sh, p); }
+  }
+  function closeModal(m) {
+    pv.mkey = null; m.id = "modal-out"; m.style.pointerEvents = "none";
+    const sh = m.querySelector(".sheet"), sc = m.querySelector(".scrim");
+    if (RM() || !sh) { m.remove(); return; }
+    an(sc, [{ opacity: 1 }, { opacity: 0 }], { d: 180, f: "forwards" });
+    const a = isPC() || sh.classList.contains("center") ? an(sh, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.96)" }], { d: 160, f: "forwards" }) : an(sh, [{ transform: "none" }, { transform: "translateY(100%)" }], { d: 200, e: "io", f: "forwards" });
+    if (a) a.onfinish = () => m.remove(); else m.remove();
+    setTimeout(() => m.isConnected && m.remove(), 400);
+  }
+
+  /* 2-C 바뀐 숫자만 반짝 (오르면 초록, 내리면 빨강) */
+  function nums(root) {
+    root.querySelectorAll("[data-mv]").forEach(el => {
+      const k = el.dataset.mv, n = +el.dataset.n, o = pv.nums[k]; pv.nums[k] = n;
+      if (o == null || o === n || isNaN(n) || RM()) return;
+      const up = n > o;
+      if (el.dataset.roll) { const suf = el.dataset.roll; const t0 = performance.now(), D = 900; el.textContent = o.toFixed(1) + suf;
+        const st = t => { const x = Math.min(1, (t - t0) / D); const v = o + (n - o) * (1 - Math.pow(1 - x, 3)); el.textContent = v.toFixed(1) + suf; if (x < 1 && el.isConnected) requestAnimationFrame(st); }; requestAnimationFrame(st); }
+      whenSeen(el, () => an(el, [{ transform: "translateY(-5px) scale(1.12)", backgroundColor: up ? "var(--accent-soft)" : "rgba(194,59,46,.18)" }, { transform: "none", backgroundColor: "transparent" }], { d: 750 }));
+    });
+  }
+
+  /* 5-B 순위표: 줄이 미끄러져 자리 이동 + ▲▼ */
+  function ranks(root) {
+    root.querySelectorAll("[data-rk]").forEach(box => {
+      const k = box.dataset.rk; const rows = [...box.querySelectorAll("[data-tid]")]; const old = pv.ranks[k]; const now = {};
+      rows.forEach((r, i) => now[r.dataset.tid] = i); pv.ranks[k] = now;
+      if (!old || RM()) return;
+      const hgt = rows.length > 1 ? rows[1].getBoundingClientRect().top - rows[0].getBoundingClientRect().top : 0;
+      whenSeen(box, () => rows.forEach((r, i) => {
+        const o = old[r.dataset.tid]; if (o == null || o === i) return; const d = o - i;
+        if (hgt) an(r, [{ transform: `translateY(${d * hgt}px)` }, { transform: "none" }], { d: 550, e: "io" });
+        const tag = document.createElement("em"); tag.className = "mvar " + (d > 0 ? "up" : "dn"); tag.textContent = (d > 0 ? "▲" : "▼") + Math.abs(d);
+        const host = r.tagName === "TR" ? r.lastElementChild : r; host.appendChild(tag);
+        an(tag, [{ opacity: 0, transform: "scale(0)" }, { opacity: 1, transform: "none" }], { d: 320, dl: 500, e: "back", f: "backwards" });
+        setTimeout(() => { const a = an(tag, [{ opacity: 1 }, { opacity: 0 }], { d: 400, f: "forwards" }); if (a) a.onfinish = () => tag.remove(); }, 3200);
+      }));
+    });
+  }
+
+  /* 3-D 탭 전환: 좌우로 밀림 */
+  function tabSlide() {
+    const c = document.getElementById("content"); const cur = UI.tab; const old = pv.tab; pv.tab = cur;
+    if (!c || old == null || old === cur) return false;
+    const ix = t => TABS.findIndex(x => x[0] === t); const dir = ix(cur) >= ix(old) ? 1 : -1;
+    if (!RM()) an(c, [{ opacity: 0, transform: `translateX(${dir * 28}px)` }, { opacity: 1, transform: "none" }], { d: 240 });
+    return true;
+  }
+
+  /* 8-D 연승 배지 두근 */
+  function streak(root) {
+    const el = root.querySelector("[data-st]"); if (!el) return; const s = +el.dataset.st; const o = pv.streak; pv.streak = s;
+    if (s >= 3 && o != null && s !== o && !RM()) { el.classList.add("hot"); whenSeen(el, () => an(el, [{ transform: "scale(1)", boxShadow: "0 0 0 0 rgba(194,59,46,.45)" }, { transform: "scale(1.12)", boxShadow: "0 0 0 10px rgba(194,59,46,0)" }, { transform: "scale(1)", boxShadow: "0 0 0 0 rgba(194,59,46,0)" }], { d: 900, it: 3 })); }
+    else if (s >= 3) el.classList.add("hot");
+  }
+
+  /* 6-B 속보 줄: 3.5초마다 위로 넘김 */
+  function tickShow(anim) {
+    const box = document.querySelector(".tkbox"); if (!box) return; const L = (S && S.press || []).slice(0, 6); if (!L.length) return;
+    const a = L[pv.tick % L.length]; const old = box.firstElementChild;
+    const n = document.createElement("button"); n.className = "tkit"; n.dataset.act = "article"; n.dataset.v = a.id; n.textContent = a.title;
+    if (!anim || RM() || !old) { box.innerHTML = ""; box.appendChild(n); return; }
+    box.appendChild(n);
+    an(old, [{ transform: "none", opacity: 1 }, { transform: "translateY(-100%)", opacity: 0 }], { d: 420, e: "io", f: "forwards" });
+    const q = an(n, [{ transform: "translateY(100%)", opacity: 0 }, { transform: "none", opacity: 1 }], { d: 420, e: "io" });
+    if (q) q.onfinish = () => old.remove(); else old.remove();
+  }
+  setInterval(() => { if (document.hidden || !document.querySelector(".tkbox") || UI.modal) return; pv.tick++; tickShow(true); }, 3500);
+
+  /* 화면 안 작은 메뉴(1군/2군, 타자/투수 등): 누른 쪽으로 아래 내용이 밀림 */
+  let segHit = null;
+  document.addEventListener("click", e => {
+    const b = e.target.closest("button[data-act]"); segHit = null; if (!b || b.dataset.act === "tab" || !b.parentElement) return;
+    if (!b.parentElement.matches(".seg, .segopt, .drseg, .kseg, .modes, [role=tablist]")) return;
+    const sib = [...b.parentElement.children].filter(x => x.tagName === "BUTTON" && x.dataset.act === b.dataset.act); if (sib.length < 2) return;
+    const on = sib.findIndex(x => x.classList.contains("on")); const me = sib.indexOf(b); if (on < 0 || on === me) return;
+    segHit = { sel: bkey(b), dir: me > on ? 1 : -1, t: Date.now(), inModal: !!b.closest("#modal") };
+  }, true);
+  function slideBelow(btn, stop, dir) {
+    const blk = btn.parentElement; let n = blk, cnt = 0;
+    while (n && n !== stop && cnt < 40) { let s = n.nextElementSibling; while (s && cnt < 40) { if (!s.classList.contains("btns")) { an(s, [{ opacity: 0, transform: `translateX(${dir * 22}px)` }, { opacity: 1, transform: "none" }], { d: 230 }); growBars(s, 16); } s = s.nextElementSibling; cnt++; } n = n.parentElement; }
+  }
+  function segAfter() {
+    const h = segHit; if (!h || Date.now() - h.t > 1500) return; segHit = null; if (RM()) return;
+    const root = h.inModal ? document.querySelector("#modal .sheet") : document.getElementById("content") || document.querySelector(".draft, .start"); if (!root) return;
+    const b = root.querySelector(h.sel); if (!b || !b.classList.contains("on")) return;
+    slideBelow(b, root, h.dir);
+  }
+  document.addEventListener("toggle", e => { const d = e.target; if (!d.matches || !d.matches("details") || !d.open || RM()) return;
+    [...d.children].forEach(c => { if (c.tagName !== "SUMMARY") an(c, [{ opacity: 0, transform: "translateY(-6px)" }, { opacity: 1, transform: "none" }], { d: 240 }); }); growBars(d, 16); }, true);
+  function chart(c, force) {
+    c.querySelectorAll("polyline.rl").forEach(pl => { const pts = pl.getAttribute("points"); const k = "rl"; const o = pv[k]; pv[k] = pts; if ((!force && o === pts) || RM()) return;
+      let L = 0; try { L = pl.getTotalLength(); } catch (e) {} if (!L) return;
+      pl.style.strokeDasharray = L; pl.style.strokeDashoffset = L; const dot = pl.parentNode.querySelector(".rdot"); if (dot) dot.style.opacity = 0;
+      whenSeen(pl.closest("svg") || pl, () => { const a = an(pl, [{ strokeDashoffset: L }, { strokeDashoffset: 0 }], { d: 1100, e: "io" }); const fin = () => { pl.style.strokeDasharray = ""; pl.style.strokeDashoffset = ""; if (dot) { dot.style.opacity = ""; an(dot, [{ opacity: 0, transform: "scale(0)" }, { opacity: 1, transform: "none" }], { d: 300, e: "back" }); } }; if (a) a.onfinish = fin; else fin(); }); });
+  }
+
+  /* 차례로 등장 */
+  const rise = (els, o) => { o = o || {}; [...els].slice(0, o.max || 14).forEach((e, k) => an(e, [{ opacity: 0, transform: `translateY(${o.y == null ? 12 : o.y}px)${o.s ? ` scale(${o.s})` : ""}` }, { opacity: 1, transform: "none" }], { d: o.d || 320, dl: (o.dl || 0) + k * (o.st || 40), e: o.e || "out", f: "backwards" })); };
+  const pop = (e, col) => an(e, [{ transform: "scale(1)", backgroundColor: col || "var(--accent-soft)" }, { transform: "scale(1.08)", offset: .35 }, { transform: "scale(1)" }], { d: 520 });
+
+  /* 첫 화면 구단 고르기: 누른 카드에서 위 정보 칸으로 이어지듯 (아이폰식 부드러운 곡선) */
+  const IOS = "cubic-bezier(.32,.72,0,1)";
+  let pk = null;
+  document.addEventListener("click", e => {
+    const c = e.target.closest(".teampick"); if (!c) return;
+    const st = document.querySelector(".start"); if (!st) return;
+    const pn = st.querySelector(".pickpanel, .pickhint"); const oldOn = st.querySelector(".teampick.on");
+    const cs = x => { const s = getComputedStyle(x); return { bg: s.backgroundColor, bd: s.borderColor }; };
+    pk = { logo: (c.querySelector(".tp-id, .teammark") || c).getBoundingClientRect(), card: c.dataset.v, cardSt: cs(c),
+      pnH: pn ? pn.getBoundingClientRect().height : 0, pnSt: pn && pn.classList.contains("pickpanel") ? cs(pn) : null,
+      old: oldOn ? oldOn.dataset.v : null, oldSt: oldOn ? cs(oldOn) : null, t: Date.now() };
+  }, true);
+  // 드래프트: 바뀌기 직전 모습을 복사해 두었다가 빠져나가는 모습으로 씀
+  let rr = null;
+  const OUT = "cubic-bezier(.4,0,1,1)";
+  document.addEventListener("click", e => { const b = e.target.closest('[data-act="drReroll"],[data-act="drGrp"],[data-act="drSlot"],[data-act="drPkgRoll"],[data-act="drPkg"],[data-act="drPick"]'); if (!b || !document.querySelector(".draft")) return;
+    const snap = sel => { const n = document.querySelector(sel); return n ? { node: n.cloneNode(true), r: n.getBoundingClientRect() } : null; };
+    const chips = [...document.querySelectorAll(".draft .posrow [data-act]")].map(x => x.dataset.v);
+    rr = { act: b.dataset.act, v: b.dataset.v, cands: snap(".drleft .cands") || snap(".drleft .pkgs"), pos: snap(".draft .posrow"), chips, t: Date.now() }; }, true);
+  function ghost(s, kf, d) { if (!s) return; const g = s.node; g.removeAttribute("id"); Object.assign(g.style, { position: "fixed", left: s.r.left + "px", top: s.r.top + "px", width: s.r.width + "px", margin: 0, pointerEvents: "none", zIndex: 5 });
+    document.body.appendChild(g); const a = an(g, kf, { d: d || 220, e: OUT, f: "forwards" }); if (a) a.onfinish = () => g.remove(); else g.remove(); setTimeout(() => g.isConnected && g.remove(), 700); }
+  function drTrans(d, keyCh, idsCh) {
+    const p = rr; if (!p || Date.now() - p.t > 1500) return false; rr = null;
+    const cs = [...d.querySelectorAll(".drleft .cands > *")].slice(0, 12), dlf = d.querySelector(".drleft");
+    if (p.act === "drPkgRoll") { // 묶음 다른 구성: 카드는 그대로, 이름이 또르륵 굴러 바뀜
+      const olds = p.cands ? [...p.cands.node.querySelectorAll(".pkg")] : []; const pool = [...d.querySelectorAll(".pkg .plink")].map(x => x.textContent);
+      d.querySelectorAll(".pkg").forEach((card, ci) => { const oc = olds[ci];
+        const on = oc ? [...oc.querySelectorAll(".plink")].map(x => x.textContent) : [];
+        card.querySelectorAll(".pkl li").forEach((li, k) => { const el = li.querySelector(".plink"); if (!el) return; const nw = el.textContent, od = on[k] || "";
+          if (od === nw) return; const mid = [0, 1].map(() => pool[Math.floor(Math.random() * pool.length)] || nw);
+          const h = el.getBoundingClientRect().height || 20; el.style.display = "inline-block"; el.style.height = h + "px"; el.style.overflow = "hidden"; el.style.verticalAlign = "bottom";
+          const col = document.createElement("span"); col.className = "mo-roll"; col.innerHTML = [od, ...mid, nw].map(t => `<span style="display:block;height:${h}px;line-height:${h}px">${esc(t)}</span>`).join("");
+          el.textContent = ""; el.appendChild(col);
+          const a = an(col, [{ transform: "translateY(0)" }, { transform: `translateY(${-3 * h}px)` }], { d: 520 + k * 70 + ci * 60, e: "cubic-bezier(.2,.6,.25,1)", f: "forwards" });
+          const fin = () => { el.textContent = nw; el.style.height = el.style.overflow = el.style.display = el.style.verticalAlign = ""; }; if (a) a.onfinish = fin; else fin(); });
+        const pr = card.querySelector(".price"), op = oc && oc.querySelector(".price"); if (pr && op && pr.textContent !== op.textContent) { const a0 = parseFloat(op.textContent), a1 = parseFloat(pr.textContent); if (!isNaN(a0) && !isNaN(a1)) { const t0 = performance.now(), D = 700; const st = t => { const x = Math.min(1, (t - t0) / D); pr.textContent = won(a0 + (a1 - a0) * (1 - Math.pow(1 - x, 3))); if (x < 1 && pr.isConnected) requestAnimationFrame(st); }; requestAnimationFrame(st); } } });
+      return true;
+    }
+    if (p.act === "drPkg") { // 묶음 다른 구성: 위로 넘기기 / 묶음 산 뒤 다음 화면: 옆으로
+      const ps = [...d.querySelectorAll(".drleft .pkgs > *, .drleft .cands > *")].slice(0, 8); const up = false;
+      ghost(p.cands, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: up ? "translateY(-30px)" : "translateX(-36px)" }], up ? 240 : 220);
+      ps.forEach((c, k) => an(c, [{ opacity: 0, transform: up ? "translateY(26px)" : "translateX(44px)" }, { opacity: 1, transform: "none" }], { d: 460, dl: (up ? 180 : 140) + k * 60, e: IOS, f: "backwards" }));
+      if (dlf) growBars(dlf, 30); return true;
+    }
+    if (p.act === "drPick") { // 14-H 뒤: 다음 자리 카드가 옆에서
+      ghost(p.cands, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(-60px)" }], 300);
+      [d.querySelector(".drleft .candhead"), ...cs, ...d.querySelectorAll(".drleft .pkgs > *")].filter(Boolean).forEach((e, k) => an(e, [{ opacity: 0, transform: "translateX(44px)" }, { opacity: 1, transform: "none" }], { d: 460, dl: 120 + Math.min(k, 6) * 40, e: IOS, f: "backwards" }));
+      if (dlf) growBars(dlf, 30); return true;
+    }
+    if (p.act === "drReroll" && idsCh) { // 10-C 위로 넘기기
+      ghost(p.cands, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-30px)" }], 240);
+      cs.forEach((c, k) => an(c, [{ opacity: 0, transform: "translateY(26px)" }, { opacity: 1, transform: "none" }], { d: 460, dl: 180 + k * 60, e: IOS, f: "backwards" }));
+      if (dlf) growBars(dlf, 30); return true;
+    }
+    if (p.act === "drGrp" && keyCh) { // 11-A 화면째 옆으로
+      const dir = p.v === "P" ? 1 : -1; segHit = null;
+      ghost(p.pos, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-dir * 40}px)` }]); ghost(p.cands, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-dir * 40}px)` }]);
+      [d.querySelector(".draft .posrow"), d.querySelector(".drleft .candhead"), ...cs].filter(Boolean).forEach(e => an(e, [{ opacity: 0, transform: `translateX(${dir * 48}px)` }, { opacity: 1, transform: "none" }], { d: 460, dl: 150, e: IOS, f: "backwards" }));
+      if (dlf) growBars(dlf, 30); return true;
+    }
+    if (p.act === "drSlot" && keyCh) { // 12-B 누른 방향으로 밀림
+      const ni = p.chips.indexOf(p.v), oi = p.chips.indexOf(p.old != null ? p.old : (pv.drAct || "")); const dir = ni >= 0 && oi >= 0 && ni < oi ? -1 : 1;
+      ghost(p.cands, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-dir * 36}px)` }]);
+      [d.querySelector(".drleft .candhead"), ...cs].filter(Boolean).forEach(e => an(e, [{ opacity: 0, transform: `translateX(${dir * 44}px)` }, { opacity: 1, transform: "none" }], { d: 460, dl: 140, e: IOS, f: "backwards" }));
+      if (dlf) growBars(dlf, 30); return true;
+    }
+    return false;
+  }
+  /* 14-H 뽑기: 카드에 불이 켜지고 칩이 차오른 뒤 다음 자리로 */
+  let picking = false;
+  document.addEventListener("click", e => {
+    const b = e.target.closest('[data-act="drPick"]'); if (!b || b.disabled || RM()) return;
+    if (b.dataset.go === "1") return; // 연출 끝난 진짜 실행
+    e.preventDefault(); e.stopImmediatePropagation(); if (picking && Date.now() - picking < 1200) return; picking = Date.now();
+    const card = b.closest(".cand"), slot = b.dataset.s; const chip = document.querySelector(`.posrow .poschip[data-v="${CSS.escape(slot || "")}"]`);
+    const swap = /바꾸기/.test(b.textContent);
+    b.classList.remove("primary"); b.classList.add("signed"); b.textContent = "계약 완료";
+    if (swap) { const ob = document.querySelector(".drleft .cand.mine [data-hold]"); const oc = ob && ob.closest(".cand");
+      if (ob) { ob.classList.add("armed"); ob.firstChild.nodeValue = "계약 취소"; an(ob, [{ opacity: 1 }, { opacity: .25 }, { opacity: 1 }, { opacity: .25 }, { opacity: 1 }], { d: 620, e: "lin" }); }
+      if (oc) an(oc, [{ boxShadow: "0 0 0 0 rgba(194,59,46,0)" }, { boxShadow: "0 0 0 2px var(--bad)" }, { boxShadow: "0 0 0 0 rgba(194,59,46,0)", opacity: .7 }], { d: 700, f: "forwards" }); }
+    if (card) { an(card, [{ boxShadow: "0 0 0 0 rgba(29,122,69,0), 0 0 0 0 rgba(29,122,69,0)" }, { boxShadow: "0 0 0 2px var(--good), 0 0 18px 3px rgba(29,122,69,.3)" }], { d: 320, e: "cubic-bezier(.25,.1,.25,1)", f: "forwards" });
+      card.classList.add("mo-clip"); const sh = document.createElement("i"); sh.className = "mo-sheen"; card.appendChild(sh); an(sh, [{ transform: "translateX(-120%) skewX(-20deg)", opacity: 0 }, { opacity: .9, offset: .4 }, { transform: "translateX(340%) skewX(-20deg)", opacity: 0 }], { d: 600, dl: 80 }); }
+    if (chip) { const f = document.createElement("b"); f.className = "mo-cfill"; chip.appendChild(f); an(f, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { d: 420, dl: 100, e: "cubic-bezier(.45,0,.25,1)", f: "both" }); }
+    const s0 = b.dataset.s, v0 = b.dataset.v; // 화면이 그 사이 다시 그려져도 뽑기가 꼭 실행되게
+    setTimeout(() => { picking = false; const nb = b.isConnected ? b : document.querySelector(`[data-act="drPick"][data-s="${CSS.escape(s0 || "")}"][data-v="${CSS.escape(v0 || "")}"]`);
+      if (nb) { nb.dataset.go = "1"; nb.click(); } else act("drPick", { dataset: { s: s0, v: v0 } }); }, swap ? 720 : 480);
+  }, true);
+
+  /* 계약 완료 버튼: 꾹 누르면 '계약 취소'로 바뀌고, 손을 떼면 취소 */
+  let hold = null;
+  const holdReset = () => { if (!hold) return; clearTimeout(hold.tm); const b = hold.b; if (b.isConnected && !hold.armed) { b.classList.remove("arming", "armed"); b.textContent = "계약 완료"; b.getAnimations().forEach(a => a.cancel()); } hold = null; };
+  document.addEventListener("pointerdown", e => { const b = e.target.closest("[data-hold]"); if (!b) return; e.preventDefault();
+    hold = { b, armed: false, t: Date.now() }; b.classList.add("arming");
+    let f = b.querySelector(".mo-hold"); if (!f) { f = document.createElement("i"); f.className = "mo-hold"; b.appendChild(f); }
+    an(f, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { d: 650, e: "lin", f: "forwards" });
+    hold.tm = setTimeout(() => { if (!hold) return; hold.armed = true; b.classList.remove("arming"); b.classList.add("armed"); b.firstChild.nodeValue = "계약 취소"; an(b, [{ transform: "scale(1)" }, { transform: "scale(1.05)" }, { transform: "scale(1)" }], { d: 220 }); }, 650); });
+  document.addEventListener("pointerup", () => { if (!hold) return; const h = hold; if (h.armed) { hold = null; act(h.b.dataset.hold, h.b); } else { if (Date.now() - h.t < 300) flash("계약 완료 버튼을 꾹 누르면 계약을 취소할 수 있어요"); holdReset(); } });
+  document.addEventListener("pointercancel", holdReset);
+  document.addEventListener("contextmenu", e => { if (e.target.closest("[data-hold]")) e.preventDefault(); });
+
+  function pickMorph(st) {
+    const p = pk; pk = null; if (!p || Date.now() - p.t > 1500) return;
+    const pn = st.querySelector(".pickpanel"); if (!pn) return;
+    // 정보 칸: 높이와 색이 이전 상태에서 이어서 바뀜
+    const h = pn.getBoundingClientRect().height, ns = getComputedStyle(pn);
+    if (p.pnH && Math.abs(p.pnH - h) > 2) an(pn, [{ height: p.pnH + "px", overflow: "hidden" }, { height: h + "px", overflow: "hidden" }], { d: 420, e: IOS });
+    if (p.pnSt) an(pn, [{ backgroundColor: p.pnSt.bg, borderColor: p.pnSt.bd }, { backgroundColor: ns.backgroundColor, borderColor: ns.borderColor }], { d: 420, e: IOS });
+    else an(pn, [{ opacity: .4, transform: "scale(.985)" }, { opacity: 1, transform: "none" }], { d: 420, e: IOS });
+    // 로고: 누른 카드 자리에서 날아와 자리 잡기
+    const lg = pn.querySelector("h3 .teammark");
+    if (lg) { const r = lg.getBoundingClientRect(); const dx = p.logo.left - r.left, dy = p.logo.top - r.top, s = p.logo.width / (r.width || 1);
+      lg.style.transformOrigin = "0 0"; lg.style.position = "relative"; lg.style.zIndex = "2";
+      const fa = an(lg, [{ transform: `translate(${dx}px,${dy}px) scale(${s})` }, { transform: "none" }], { d: 560, e: IOS }); if (fa) fa.onfinish = () => { lg.style.zIndex = ""; }; }
+    // 글자들: 살짝 겹치며 바뀜 (깜빡임 없이)
+    an(pn.querySelector("h3"), [{ opacity: .55 }, { opacity: 1 }], { d: 360, e: IOS });
+    pn.querySelectorAll(".kv dd").forEach((d, k) => an(d, [{ opacity: .35, transform: "translateY(5px)" }, { opacity: 1, transform: "none" }], { d: 380, dl: k * 22, e: IOS, f: "backwards" }));
+    const sl = pn.querySelector(".slogan"); if (sl) { const tx = sl.firstElementChild && sl.children.length === 1 ? sl.firstElementChild : sl; // 글자가 쓰이듯 왼쪽부터 좌르륵
+      an(tx, [{ clipPath: "inset(0 100% 0 0)", letterSpacing: ".18em", opacity: .4 }, { clipPath: "inset(0 0 0 0)", letterSpacing: "normal", opacity: 1 }], { d: 800, dl: 150, e: "cubic-bezier(.4,0,.2,1)", f: "backwards" }); }
+    // 카드 선택 표시: 새 카드는 서서히 켜지고, 이전 카드는 서서히 꺼짐
+    const nc = st.querySelector(`.teampick[data-v="${CSS.escape(p.card)}"]`);
+    if (nc) { const s2 = getComputedStyle(nc); an(nc, [{ backgroundColor: p.cardSt.bg, borderColor: p.cardSt.bd, transform: "scale(.97)" }, { backgroundColor: s2.backgroundColor, borderColor: s2.borderColor, transform: "none" }], { d: 420, e: IOS }); }
+    const oc = p.old && p.old !== p.card ? st.querySelector(`.teampick[data-v="${CSS.escape(p.old)}"]`) : null;
+    if (oc) { const s3 = getComputedStyle(oc); an(oc, [{ backgroundColor: p.oldSt.bg, borderColor: p.oldSt.bd }, { backgroundColor: s3.backgroundColor, borderColor: s3.borderColor }], { d: 420, e: IOS }); }
+  }
+
+  /* 첫 화면 */
+  function startFx(entered) {
+    const st = document.querySelector(".start"); if (!st || RM()) { pv.pick = UI.pick; return; }
+    if (entered) {
+      const h = st.querySelector(".ttl"); if (h) an(h, [{ opacity: 0, transform: "translateY(-20px) scale(.94)" }, { opacity: 1, transform: "none" }], { d: 650, e: "back", f: "backwards" });
+      rise(st.querySelectorAll(".start-hero .eyebrow, .start-hero .intro, .start-hero .datanote"), { dl: 180, st: 90 });
+      rise(st.querySelectorAll(".modebox, .resume, #pickTop, .pickhint, .pickpanel"), { dl: 380, st: 80 });
+      rise(st.querySelectorAll(".teampick"), { dl: 480, st: 35, s: .92, y: 8, e: "back", max: 10 });
+    } else if (UI.pick && pv.pick !== UI.pick) pickMorph(st);
+    pv.pick = UI.pick;
+  }
+
+  /* 드래프트 */
+  function draftFx(entered) {
+    const d = document.querySelector(".draft"); if (!d || !S || !S.dr) return;
+    const D = S.dr, G = UI.dg || {}; const key = [G.view, D.active, G.pk, G.grp].join("|");
+    const old = pv.drPicks || {}; const now = Object.assign({}, D.picks); pv.drPicks = now;
+    const bar = d.querySelector(".budbar b"); const bw = bar ? parseFloat(bar.style.width) || 0 : null; const obw = pv.drBar; pv.drBar = bw;
+    const keyCh = pv.drKey !== key; pv.drKey = key;
+    const cards = [...d.querySelectorAll(".drleft .cand[data-pid]")]; const ids = cards.map(c => c.dataset.pid).join(","); const idsCh = pv.drIds != null && pv.drIds !== ids; pv.drIds = ids;
+    const opn = new Set(cards.filter(c => !c.classList.contains("shut")).map(c => c.dataset.pid)); const oOpn = pv.drOpen || new Set(); pv.drOpen = opn;
+    nums(d);
+    if (RM()) return;
+    if (entered) {
+      const hd = d.querySelector(".drhead"); if (hd) an(hd, [{ opacity: 0, transform: "translateY(-10px)" }, { opacity: 1, transform: "none" }], { d: 300 });
+      rise(d.querySelectorAll(".posrow .poschip"), { dl: 150, st: 30, s: .9, y: 4, e: "back" });
+      rise(d.querySelectorAll(".drleft .cands > *, .drleft .candhead"), { dl: 250, st: 45 }); const dl0 = d.querySelector(".drleft"); if (dl0) growBars(dl0, 30);
+      rise(d.querySelectorAll(".drside .rrow"), { dl: 300, st: 15, y: 6, max: 25 });
+      if (bar) an(bar, [{ width: "0%" }, { width: bar.style.width }], { d: 900, dl: 200, e: "expo", f: "backwards" });
+      return;
+    }
+    if (bar && obw != null && obw !== bw) an(bar, [{ width: obw + "%" }, { width: bw + "%" }], { d: 600, e: "expo" });
+    for (const s in now) if (now[s] && now[s] !== old[s]) {
+      const ch = d.querySelector(`.poschip[data-v="${CSS.escape(s)}"]`); if (ch) pop(ch);
+      d.querySelectorAll(`.rmain[data-v="${CSS.escape(s)}"]`).forEach(b => { const li = b.closest("li") || b; an(li, [{ backgroundColor: "var(--accent-soft)" }, { backgroundColor: "transparent" }], { d: 1200 }); });
+    }
+    const dlf = d.querySelector(".drleft");
+    const prevAct = pv.drAct; pv.drAct = D.active;
+    if (rr && rr.act === "drSlot") rr.old = prevAct;
+    if (drTrans(d, keyCh, idsCh)) { segAfter(); return; }
+    if (!keyCh && idsCh) rise(d.querySelectorAll(".drleft .cands > *"), { st: 45, y: 14 });
+    else if (!keyCh) cards.forEach(c => { if (opn.has(c.dataset.pid) && !oOpn.has(c.dataset.pid)) { an(c, [{ opacity: .5, transform: "scaleY(.96)", transformOrigin: "top" }, { opacity: 1, transform: "none", transformOrigin: "top" }], { d: 260 }); rise(c.querySelectorAll(".candtop ~ *, .cand > *:not(.candtop)"), { st: 30, y: 6, max: 6 }); growBars(c, 8); } });
+    if (keyCh) { rise(d.querySelectorAll(".drleft .cands > *"), { st: 40, y: 10 }); if (dlf) growBars(dlf, 30); const pr = d.querySelector(".posrow"); if (pr && !segHit) an(pr, [{ opacity: .3 }, { opacity: 1 }], { d: 200 }); }
+    segAfter();
+  }
+
+  /* 시즌 화면에 처음 들어올 때: 카드가 차례로 */
+  function enterMain(c) {
+    if (RM()) return;
+    rise(c.querySelectorAll(":scope > .grid2 > *, :scope > * > section.card"), { st: 45, max: 10 });
+    const h = document.querySelector("header.top"); if (h) an(h, [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { d: 300 });
+    document.querySelectorAll(".tabbar .navb, .rail .navb").forEach((b, k) => an(b, [{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { d: 260, dl: 120 + k * 35, f: "backwards" }));
+  }
+
+  /* 그린 직후 */
+  function after() {
+    try {
+      const v = UI.shareView ? "share" : (!S || UI.atStart) ? "start" : S.dr ? "draft" : "main"; const entered = pv.view !== v; pv.view = v;
+      if (v === "start") { startFx(entered); segAfter(); return; }
+      if (v === "draft") { draftFx(entered); return; }
+      const c = document.getElementById("content");
+      if (entered && c) { pv.tab = UI.tab; enterMain(c); growBars(c, 24); }
+      pend.forEach((f, el) => { if (!el.isConnected) { io.unobserve(el); pend.delete(el); } });
+      const moved = tabSlide();
+      if (!c) return;
+      if (moved && !RM()) growBars(c, 24);
+      tickShow(false); segAfter();
+      if (UI.live || document.getElementById("live")) return; // 중계 창이 덮고 있으면 닫힌 뒤에 보여줘요
+      if (UI.modal && UI.tab === "home") return; // 보고 창이 덮고 있어도 닫힌 뒤에
+      nums(c); ranks(c); streak(c); chart(c, moved);
+    } catch (e) { console.error(e); }
+  }
+
+  /* 9 중계: 점수 튐 · 이닝 칸 차오름 · 주자 불 켜짐 · 진행 막대 부드럽게 */
+  function live(el, L) {
+    try {
+      const o = pv.live || {}; const gk = L.play ? L.play.gid : null;
+      const sc = [...el.querySelectorAll(".sb-s b")].map(b => +b.textContent);
+      const bs = [...el.querySelectorAll(".dia rect")].map(r => r.classList.contains("on"));
+      const inn = el.querySelectorAll(".innbar i.f").length;
+      const pg = el.querySelector(".lprog b"); const pw = pg ? parseFloat(pg.style.width) || 0 : 0;
+      pv.live = { gk, sc, bs, inn, pw };
+      const ph = -(performance.now() % 2400); el.querySelectorAll(".livedot, .lprog b").forEach(x => x.style.animationDelay = ph + "ms");
+      if (RM()) return;
+      if (pg && o.pw != null && pw !== o.pw) { const gap = o.at ? Math.min(1500, Math.max(250, performance.now() - o.at)) : 500; an(pg, [{ width: o.pw + "%" }, { width: pw + "%" }], { d: gap, e: "lin" }); }
+      pv.live.at = performance.now();
+      // 새 결과 칸 톡 · 새 중계 줄 내려옴
+      const wl = el.querySelectorAll(".wlstrip .wl"); if (o.wl != null && wl.length > o.wl) for (let k = o.wl; k < wl.length; k++) an(wl[k], [{ opacity: 0, transform: "scale(.4)" }, { opacity: 1, transform: "none" }], { d: 360, e: "back" });
+      pv.live.wl = wl.length;
+      const nl = el.querySelector(".rlines li.new"); if (nl && o.gk === gk && o.nk !== (L.play && L.play.k)) an(nl, [{ opacity: 0, transform: "translateY(-8px)" }, { opacity: 1, transform: "none" }], { d: 260 });
+      pv.live.nk = L.play && L.play.k;
+      if (!gk || o.gk !== gk) return;
+      el.querySelectorAll(".sb-s b").forEach((b, i) => { if (o.sc && sc[i] > o.sc[i]) { b.style.display = "inline-block"; an(b, [{ transform: "translateY(-10px) scale(1.3)", color: "var(--good)" }, { transform: "none" }], { d: 600, e: "back" }); } });
+      el.querySelectorAll(".dia rect").forEach((r, i) => { if (bs[i] && o.bs && !o.bs[i]) an(r, [{ opacity: .2, strokeWidth: "5" }, { opacity: 1, strokeWidth: "1.5" }], { d: 520 }); });
+      if (o.inn != null && inn > o.inn) { const f = el.querySelectorAll(".innbar i.f"); for (let k = o.inn; k < inn; k++) if (f[k]) an(f[k], [{ transform: "scaleX(0)" }, { transform: "none" }], { d: 320, e: "out" }); }
+    } catch (e) { console.error(e); }
+  }
+
+  /* 8-C 우승 불꽃놀이 */
+  function champ(el) {
+    if (RM() || el.querySelector("canvas.fw")) return;
+    const cv = document.createElement("canvas"); cv.className = "fw"; el.appendChild(cv);
+    const r = el.getBoundingClientRect(), dpr = window.devicePixelRatio || 1; cv.width = r.width * dpr; cv.height = r.height * dpr; const c = cv.getContext("2d"); c.scale(dpr, dpr);
+    let P = []; const cs = ["#D8B84A", "#f2b544", "#3dd68c", "#ff6b5e", "#8fb2df", "#f07aa8"];
+    const shots = Array.from({ length: 9 }, (_, i) => i * 380 + Math.random() * 150); const t0 = performance.now();
+    const burst = () => { const x = 40 + Math.random() * (r.width - 80), y = 50 + Math.random() * r.height * .35, col = cs[Math.floor(Math.random() * cs.length)]; for (let k = 0; k < 56; k++) { const a = k / 56 * Math.PI * 2, s = 1.2 + Math.random() * 2.6; P.push({ x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, l: 1, c: col }); } };
+    const f = t => { const e = t - t0; while (shots.length && e > shots[0]) { shots.shift(); burst(); }
+      c.clearRect(0, 0, r.width, r.height); for (const p of P) { p.x += p.vx; p.y += p.vy; p.vy += .035; p.vx *= .99; p.l -= .012; c.globalAlpha = Math.max(0, p.l); c.fillStyle = p.c; c.fillRect(p.x, p.y, 3, 3); }
+      P = P.filter(p => p.l > 0); c.globalAlpha = 1; if ((P.length || shots.length) && cv.isConnected) requestAnimationFrame(f); else cv.remove(); };
+    requestAnimationFrame(f);
+  }
+
+  /* 3-D 화면 밀어서 탭 넘기기 (옆으로 밀리는 표·목록 위에서는 안 넘어가요) */
+  let sw = null;
+  const hScroll = (el, stop) => { for (let e = el; e && e !== stop; e = e.parentElement) { if (e.scrollWidth > e.clientWidth + 2) { const ox = getComputedStyle(e).overflowX; if (ox === "auto" || ox === "scroll") return true; } } return false; };
+  document.addEventListener("touchstart", e => {
+    sw = null; if (e.touches.length !== 1 || UI.modal || UI.live || !S) return;
+    if (S.dr) { const t0 = e.target; if (!t0.closest(".draft") || t0.closest(".drhead,.posrow,input,select,textarea,.noswipe") || hScroll(t0, document.body)) return; sw = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now(), dr: true }; return; }
+    const t = e.target; if (!document.querySelector(".shell") || t.closest("header.top,.tabbar,.rail,#modal,#modal-out,#live,#champov")) return;
+    if (t.closest("input,select,textarea,.noswipe") || hScroll(t, document.body)) return;
+    sw = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+  }, { passive: true });
+  document.addEventListener("touchend", e => {
+    if (!sw) return; const tc = e.changedTouches[0]; const dx = tc.clientX - sw.x, dy = tc.clientY - sw.y, dt = Date.now() - sw.t; sw = null;
+    if (dt > 700 || Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 2) return;
+    if (S && S.dr) { // 드래프트: 옆 포지션으로
+      const chips = [...document.querySelectorAll(".draft .posrow .poschip")]; const i = chips.findIndex(c => c.classList.contains("on")); const j = i + (dx < 0 ? 1 : -1);
+      if (i < 0 || j < 0 || j >= chips.length) return; chips[j].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" }); chips[j].click(); return; }
+    const i = TABS.findIndex(x => x[0] === UI.tab), j = i + (dx < 0 ? 1 : -1); if (j < 0 || j >= TABS.length) return;
+    act("tab", { dataset: { v: TABS[j][0] } });
+  }, { passive: true });
+
+  /* 7-A 버튼 눌림: 누를 때 작아지고, 다시 그려진 뒤 같은 버튼이 제자리로 */
+  let pressed = null;
+  const bkey = b => b.dataset && b.dataset.act ? `[data-act="${b.dataset.act}"]${b.dataset.v != null ? `[data-v="${CSS.escape(b.dataset.v)}"]` : ""}` : null;
+  document.addEventListener("pointerdown", e => { const b = e.target.closest("button"); if (!b || b.disabled || RM() || b.classList.contains("tkit") || b.classList.contains("teampick")) return; an(b, [{ scale: "1" }, { scale: ".95" }], { d: 90, f: "forwards" }); pressed = { b, k: bkey(b), t: Date.now() }; }, { passive: true });
+  const release = () => { const p = pressed; if (!p) return; pressed = null; setTimeout(() => {
+      let b = p.b.isConnected ? p.b : (p.k ? document.querySelector("#modal " + p.k) || document.querySelector(p.k) : null); if (!b) return;
+      b.getAnimations().forEach(a => a.cancel()); an(b, [{ scale: ".95" }, { scale: "1.02", offset: .6 }, { scale: "1" }], { d: 220 }); }, 0); };
+  document.addEventListener("pointerup", release, { passive: true }); document.addEventListener("pointercancel", release, { passive: true });
+
+  /* 스크롤 끝에 세게 닿으면 쿵 (빠를수록 크게, 살살이면 거의 없음) */
+  const sc = new WeakMap();
+  document.addEventListener("scroll", e => {
+    if (RM()) return; const el = e.target === document ? document.scrollingElement : e.target;
+    const isWin = el === document.scrollingElement; if (!isWin && !el.matches("#modal .sheet")) return;
+    const y = el.scrollTop, max = el.scrollHeight - el.clientHeight, t = performance.now(); if (max < 40) return;
+    const o = sc.get(el); sc.set(el, { y, t, v: o ? (o.v * .4 + (Math.abs(y - o.y) / Math.max(8, t - o.t)) * .6) : 0 });
+    if (!o) return; const atTop = y <= 0, atBot = y >= max - 1, wasEdge = o.y <= 0 || o.y >= max - 1;
+    if ((!atTop && !atBot) || wasEdge) return;
+    const v = sc.get(el).v; if (v < .9) return; // 살살 닿으면 효과 없음
+    const amp = Math.min(30, (v - .9) * 14 + 4) * (atBot ? -1 : 1);
+    const tg = isWin ? document.querySelector("#content, .start, .drmain") : el.firstElementChild ? el : null; if (!tg) return;
+    an(tg, [{ transform: "none", easing: EZ.out }, { transform: `translateY(${amp}px)`, offset: .3, easing: "cubic-bezier(.45,0,.25,1)" }, { transform: `translateY(${-amp * .06}px)`, offset: .78, easing: EZ.out }, { transform: "none" }], { d: 520 + Math.abs(amp) * 6, e: "lin" });
+  }, { passive: true, capture: true });
+
+  return { after, modal, closeModal, live, champ };
+})();
 /* ---------- 이벤트 처리 ---------- */
 function act(a, el) {
   const v = el.dataset.v; UI.rev = (UI.rev || 0) + 1;
