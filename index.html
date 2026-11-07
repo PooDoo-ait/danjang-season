@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.7.1</title>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><script>window.KBO_BASIC_ONLY=true</script><title>단장의 시즌 ver 1.7.2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
@@ -4022,8 +4022,9 @@ let S = null, BASE = null;
 const UI = { tab: "home", sub: { meet: "room", tac: "plan", roster: "1", rec: "stand", hand: "R" }, sel: null, modal: null, busy: false, msg: null, recKey: "AVG", recMine: false, calM: null, recPos: "H" };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const GAME_VER = "1.7.1"; // 게임 버전 — 업데이트할 때마다 올려요
+const GAME_VER = "1.7.2"; // 게임 버전 — 업데이트할 때마다 올려요
 const CHANGELOG = [
+  { v: "1.7.2", d: "2026.11.07", items: ["묶음 슬롯머신 전환: 굴러가는 동안 글자 간격이 벌어지지 않고, 글자 폭이 바뀌면 칸이 부드럽게 맞춰져요"] },
   { v: "1.7.1", d: "2026.11.07", items: ["업데이트 내역 글씨 크기를 통일했어요", "불펜·벤치 묶음 다른 구성 보기: 선수 이름·팀·기록이 글자마다 슬롯머신처럼 굴러 바뀌어요"] },
   { v: "1.7", d: "2026.11.06", items: ["화면에 움직임이 생겼어요: 능력치 막대가 차오르고(시즌 보너스는 이어서 초록으로), 바뀐 숫자는 반짝, 순위가 바뀌면 줄이 미끄러지며 ▲▼ 표시", "탭이 좌우로 밀리며 바뀌고, 휴대폰은 화면을 옆으로 밀면 옆 탭으로 넘어가요", "창은 휴대폰에선 아래서 올라오고 PC에선 가운데서 열려요 · 버튼은 누르면 살짝 눌려요", "홈 맨 위에 뉴스 줄이 생겼어요 (눌러서 기사 보기)", "중계: 점수 날 때 숫자가 튀고, 이닝 칸이 차오르고, 주자가 나가면 베이스에 불이 켜져요", "드래프트: 뽑으면 카드에 불이 켜지고 칩이 차오른 뒤 다음 자리로 · 뽑은 선수의 '계약 완료'를 꾹 누르면 '계약 취소'로 바뀌고 손을 떼면 취소", "결과 공유 카드: 기본 모드는 난이도(쉬움·보통·어려움)를 함께 보여줘요", "2군 추천 투수는 같은 보직끼리 비교해요", "드래프트: 바꾸기를 누르면 원래 계약이 빨간 '계약 취소'로 깜빡이며 바뀌어요 · 화면을 옆으로 밀면 옆 포지션으로 · 묶음 다른 구성은 이름이 또르륵 굴러 바뀌어요 · 야수 묶음엔 스타가 드물게(스타 하위 50%만)", "드래프트 순서: 야수 9명 → 선발 5명 → 불펜 묶음 → 야수 묶음 · 묶음도 '다른 묶음 보기'로 다른 구성을 볼 수 있어요 (5번)", "첫 화면·드래프트에도 움직임: 제목과 구단 카드가 차례로 등장, 선수를 뽑으면 자리 칸이 톡 튀고 남은 예산이 반짝", "화면 안 작은 메뉴(1군/2군 등)는 누른 쪽으로 밀리고, 접힌 칸은 펼칠 때 내려와요", "원석 보너스가 막 열린 선수는 막대가 반짝, 연승 중엔 배지가 두근, 우승하면 불꽃놀이", "기기에서 '움직임 줄이기'를 켜면 모두 꺼져요"] },
   { v: "1.6.3", d: "2026.11.06", items: ["2군 추천 투수: 선발은 1군 선발과, 불펜·마무리는 1군 불펜과만 비교해서 추천해요"] },
@@ -6934,27 +6935,33 @@ var MO = (function () {
 
   /* 슬롯머신: 글자 하나하나 굴러 바뀜 */
   const HANG = "가나다라마바사아자차카타파하김이박최정강조윤장임한오서신권황안송류홍전고문양손배백허노구곽원채", DIGS = "0123456789";
+  const MC = document.createElement("canvas").getContext("2d");
   function rollChars(el, od, nw, base, pool) {
     if (od === nw || RM()) return; const H = el.getBoundingClientRect().height || 18, n = Math.max(nw.length, od.length);
-    el.textContent = ""; Object.assign(el.style, { display: "inline-flex", height: H + "px", overflow: "hidden", verticalAlign: "bottom" });
-    let left = n; const done = () => { if (--left === 0) { el.textContent = nw; el.style.height = el.style.overflow = el.style.display = el.style.verticalAlign = ""; } };
-    for (let c = 0; c < n; c++) { const a = od[c] || "", z = nw[c] || ""; const box = document.createElement("span"); box.style.cssText = `display:inline-block;height:${H}px;overflow:hidden;white-space:pre`;
-      const col = document.createElement("span"); col.style.cssText = "display:flex;flex-direction:column";
+    const cs = getComputedStyle(el); MC.font = cs.font || `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`; const ls = parseFloat(cs.letterSpacing) || 0;
+    const W = t => t ? MC.measureText(t).width + ls : 0;
+    el.textContent = ""; Object.assign(el.style, { display: "inline-flex", height: H + "px", overflow: "hidden", verticalAlign: "bottom", whiteSpace: "pre" });
+    let left = n; const done = () => { if (--left === 0) { el.textContent = nw; el.style.height = el.style.overflow = el.style.display = el.style.verticalAlign = el.style.whiteSpace = ""; } };
+    for (let c = 0; c < n; c++) { const a = od[c] || "", z = nw[c] || ""; const w0 = W(a), w1 = W(z);
+      const box = document.createElement("span"); box.style.cssText = `display:inline-block;flex:none;height:${H}px;width:${w0}px;overflow:hidden;white-space:pre;position:relative`;
+      const col = document.createElement("span"); col.style.cssText = "display:flex;flex-direction:column;align-items:flex-start";
       const same = a === z, isD = /\d/.test(z || a), P = isD ? DIGS : pool, spin = same ? 0 : 3 + Math.floor(Math.random() * 3);
       const seq = [a]; for (let q = 0; q < spin; q++) seq.push(/[ ·.\-]/.test(z) ? z : P[Math.floor(Math.random() * P.length)]); if (!same) seq.push(z);
-      col.innerHTML = seq.map(t => `<span style="display:block;height:${H}px;line-height:${H}px;text-align:center">${t ? esc(t) : "&nbsp;"}</span>`).join("");
+      col.innerHTML = seq.map(t => `<span style="display:block;height:${H}px;line-height:${H}px;white-space:pre">${t ? esc(t) : ""}</span>`).join("");
       box.appendChild(col); el.appendChild(box);
       if (same) { done(); continue; }
-      if (!z) box.style.width = box.getBoundingClientRect().width + "px";
-      const a1 = an(col, [{ transform: "translateY(0)" }, { transform: `translateY(${-(seq.length - 1) * H}px)` }], { d: 560 + c * 90, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" });
-      if (!z) an(box, [{ width: box.style.width }, { width: "0px" }], { d: 400, dl: base + 300 + c * 90, e: "cubic-bezier(.4,0,.2,1)", f: "forwards" });
+      const D = 560 + c * 90;
+      const a1 = an(col, [{ transform: "translateY(0)" }, { transform: `translateY(${-(seq.length - 1) * H}px)` }], { d: D, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" });
+      if (Math.abs(w0 - w1) > .5) an(box, [{ width: w0 + "px" }, { width: w1 + "px" }], { d: D, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" }); // 칸 폭이 새 글자에 맞춰 자연스럽게
       if (a1) a1.onfinish = done; else done(); }
   }
   function rollBlock(nwEl, oldEl, base) { // 팀 칩: 이전 칩이 위로 올라가고 새 칩이 아래서 올라옴
     if (RM()) return; const H = nwEl.getBoundingClientRect().height || 18; const o = oldEl.cloneNode(true);
     const wrap = document.createElement("span"); wrap.style.cssText = `display:inline-flex;flex-direction:column;height:${H}px;overflow:hidden;vertical-align:middle`;
     nwEl.replaceWith(wrap); const inner = document.createElement("span"); inner.style.cssText = "display:flex;flex-direction:column"; inner.append(o, nwEl); wrap.appendChild(inner);
-    [o, nwEl].forEach(x => { x.style.height = H + "px"; x.style.flex = "none"; });
+    [o, nwEl].forEach(x => { x.style.height = H + "px"; x.style.flex = "none"; x.style.alignSelf = "flex-start"; });
+    const ow = oldEl.getBoundingClientRect ? (document.body.appendChild(o), o.getBoundingClientRect().width) : 0; inner.prepend(o); const nwW = nwEl.getBoundingClientRect().width;
+    if (ow && nwW && Math.abs(ow - nwW) > .5) an(wrap, [{ width: ow + "px" }, { width: nwW + "px" }], { d: 620, dl: base, e: "cubic-bezier(.22,.61,.24,1)" });
     const a = an(inner, [{ transform: "translateY(0)" }, { transform: `translateY(${-H}px)` }], { d: 620, dl: base, e: "cubic-bezier(.22,.61,.24,1)", f: "forwards" });
     const fin = () => { nwEl.style.height = nwEl.style.flex = ""; wrap.replaceWith(nwEl); }; if (a) a.onfinish = fin; else fin();
   }
